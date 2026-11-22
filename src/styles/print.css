@@ -1,0 +1,42 @@
+/* Printing. Made for the cheat sheets, and correct for every page: no navigation, no terminal,
+   black text on white paper. */
+@media print {
+  :root, :root[data-theme="dark"], :root[data-theme="light"] {
+    color-scheme: light;
+    --bg: #fff; --s1: #fff; --s2: #fff; --s3: #f2f2f2;
+    --line: #999; --line-2: #666;
+    --text: #000; --text-2: #000; --text-3: #333;
+    --accent: #000; --accent-ink: #fff; --accent-soft: #fff; --accent-text: #000;
+    --done: #000; --done-soft: #fff; --warn: #000; --warn-soft: #fff;
+    --shadow: none; --shadow-sm: none; --sheen: none;
+    --term-bg: #fff; --term-bar: #fff; --term-line: #999; --term-text: #000; --term-dim: #333; --term-prompt: #000;
+  }
+  @page { margin: 14mm 13mm; }
+  html, body { background: #fff !important; color: #000 !important; font-size: 10.5pt; }
+  .topbar, .lbar, .rail, .sheet-wrap, .divider, .termpane, .term-fab, .secnav, .steps-count, .complete, .nextprev, .pagefoot,
+  .foot-links, .tb-actions, .practice-note, .no-print, .gloss-nav, .sl-skip-link, site-search, .cta, .resume-term, .seg { display: none !important; }
+  .app, .work, .work.no-term { display: block !important; }
+  .page, .reader-in, .frame .page > main, .frame .page > .foot { max-width: none !important; width: auto !important; margin: 0 !important; padding: 0 !important; }
+  .lhead { padding-top: 0 !important; }
+  .lhead h1 { font-size: 20pt; margin-top: 2pt; }
+  .lnum, .lnum span:last-child { color: #000; }
+  .prose { font-size: 10.5pt; line-height: 1.4; }
+  .prose h2 { font-size: 13pt; break-after: avoid; }
+  .prose h3 { font-size: 11pt; break-after: avoid; }
+  .page-prose h2 { margin: 12pt 0 5pt; padding-bottom: 2pt; }
+  .prose a { color: #000; text-decoration: underline; }
+  .prose pre, .prose pre.code, .prose pre.code span, .prose pre.out, .tw-screen { color: #000 !important; background: #fff !important; white-space: pre-wrap; overflow: visible; }
+  .tblock, .fblock, .oblock, .tb-out, .tb-head, .fb-head { background: #fff !important; color: #000 !important; box-shadow: none !important; }
+  .tb-head, .fb-head { height: auto; padding: 2pt 6pt; }
+  .tblock, .fblock, .oblock, .starlight-aside, .diagram, .mindmap, .terms > div, .fixes li, .prose tr, .quiz > li { break-inside: avoid; }
+  .prose .table-wrap { overflow: visible; border-radius: 0; font-size: 9.5pt; }
+  .prose th, .prose td { padding: 3pt 6pt; border: 0.5pt solid #777; }
+  .prose thead th { background: #eee !important; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .prose :not(pre) > code { border: 0; padding: 0; background: none; font-weight: 600; }
+  details::details-content { content-visibility: visible; display: block; }
+  .foot { margin-top: 14pt; padding: 6pt 0 0; font-size: 8.5pt; }
+  .mm-node.mm-center { fill: #fff; stroke: #000; }
+  .mm-text.mm-center, .mm-text.mm-branch { fill: #000; }
+  .d-box.d-hot, .d-line.d-hot { stroke: #000; }
+  .stage-label, .sec-no, .step-k { border-color: #777; background: #fff; }
+}

@@ -1,0 +1,61 @@
+---
+// The course outline: Part > Module > Lesson, numbered. Built from the curriculum and from the
+// pages that exist. Used in the side rail and in the outline sheet.
+import { pageInfo } from '../lib/route.mjs';
+import { IC } from '../lib/icons.mjs';
+import { href, sitePages } from '../lib/course.mjs';
+
+const info = pageInfo(Astro);
+const c = info.course;
+const here = info.docPath;
+const openModule = info.module ? info.module.n : null;
+const cur = (p) => (p === here ? { 'aria-current': 'page' as const } : {});
+---
+
+<nav class="cnav" aria-label="Course outline">
+  <a class="cnav-top" href={href('')}>Course home</a>
+  {c.parts.map((p) => (
+    <div class="cnav-part" data-part={p.n}>
+      <p class="cnav-part-h"><span>Part {p.n}</span>{p.title}</p>
+      <ul class="cnav-mods">
+        {p.modules.map((m) => {
+          const any = m.hasOverview || m.hasCheat || m.lessons.some((l) => l.exists);
+          return any ? (
+            <li>
+              <details class="cnav-mod" data-module={m.n} open={m.n === openModule}>
+                <summary>
+                  <span class="cnav-n">{m.n}</span>
+                  <span class="cnav-t">{m.title}</span>
+                  <span class="cnav-c" data-count-short></span>
+                  <Fragment set:html={IC.down} />
+                </summary>
+                <ol class="cnav-list">
+                  {m.hasOverview && <li class="cnav-extra"><a href={m.href} {...cur(m.path)}><span class="cnav-id"></span><span>Overview</span></a></li>}
+                  {m.lessons.filter((l) => l.exists).map((l) => (
+                    <li data-lesson={l.id}>
+                      <a href={l.href} {...cur(l.path)}>
+                        <span class="cnav-id">{l.id}</span>
+                        <span>{l.shortTitle}{l.project && <span class="visually-hidden"> (project step)</span>}</span>
+                        <span class="cnav-check" aria-hidden="true" set:html={IC.check} />
+                        <span class="visually-hidden" data-done-text></span>
+                      </a>
+                    </li>
+                  ))}
+                  {m.hasCheat && <li class="cnav-extra"><a href={m.cheatHref} {...cur(m.cheatPath)}><span class="cnav-id"></span><span>Cheat sheet</span></a></li>}
+                </ol>
+              </details>
+            </li>
+          ) : (
+            <li><p class="cnav-mod is-empty"><span class="cnav-n">{m.n}</span><span class="cnav-t">{m.title}</span><span class="cnav-c">soon</span></p></li>
+          );
+        })}
+      </ul>
+    </div>
+  ))}
+  <div class="cnav-part cnav-site">
+    <p class="cnav-part-h">Site</p>
+    <ul class="cnav-mods">
+      {sitePages.map((s) => <li><a class="cnav-link" href={href(s.path)} {...cur(s.path)}>{s.title}</a></li>)}
+    </ul>
+  </div>
+</nav>

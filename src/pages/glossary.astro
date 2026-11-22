@@ -1,0 +1,82 @@
+---
+// Glossary: generated at build time from the "Key terms" section of every lesson.
+// A term line has the form:  - **Term**: definition.   (docs/CONTENT_GUIDE.md, section 3)
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { getCollection } from 'astro:content';
+import { marked } from 'marked';
+import { course, plural } from '../lib/course.mjs';
+
+const c = course();
+const byPath = new Map(c.lessons.map((l) => [l.path, l]));
+const inline = (s) => marked.parseInline(s, { gfm: true });
+const cap = (s) => s.replace(/^[a-z]/, (ch) => ch.toUpperCase());
+const plain = (s) => s.replace(/[`*_]/g, '').trim();
+
+const entries = await getCollection('docs');
+const found = [];
+for (const entry of entries) {
+  const lesson = byPath.get(entry.id.replace(/\/index$/, ''));
+  if (!lesson || !entry.body) continue;
+  const m = /^##\s+Key terms\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m.exec(entry.body);
+  if (!m) continue;
+  for (const line of m[1].split(/\r?\n/)) {
+    const t = /^[-*]\s+\*\*(.+?)\*\*(.*?):\s+(.+)$/.exec(line.trim());
+    if (!t) continue;
+    found.push({ term: t[1].trim(), extra: t[2].trim(), def: cap(t[3].trim()), lesson });
+  }
+}
+
+// One entry per term. The first lesson that defines it (in course order) gives the definition.
+const order = new Map(c.lessons.map((l, i) => [l.id, i]));
+found.sort((a, b) => order.get(a.lesson.id) - order.get(b.lesson.id));
+const terms = new Map();
+for (const f of found) {
+  const key = plain(f.term).toLowerCase();
+  if (!terms.has(key)) terms.set(key, { ...f, sort: plain(f.term), also: [] });
+  else if (!terms.get(key).also.some((l) => l.id === f.lesson.id) && terms.get(key).lesson.id !== f.lesson.id) terms.get(key).also.push(f.lesson);
+}
+const list = [...terms.values()].sort((a, b) => a.sort.localeCompare(b.sort, 'en', { sensitivity: 'base' }));
+const letterOf = (t) => (/^[a-z]/i.test(t.sort) ? t.sort[0].toUpperCase() : '#');
+const groups = [];
+for (const t of list) {
+  const L = letterOf(t);
+  if (!groups.length || groups.at(-1).letter !== L) groups.push({ letter: L, items: [] });
+  groups.at(-1).items.push(t);
+}
+const idOf = (L) => (L === '#' ? 'letter-other' : `letter-${L.toLowerCase()}`);
+const description = 'Every key term of the course in one alphabetical list. Each term links to the lesson that explains it.';
+---
+
+<StarlightPage frontmatter={{ title: 'Glossary', description }}>
+  <div class="prose page-prose gloss">
+    {list.length ? (
+      <>
+        <p class="gloss-count">{plural(list.length, 'term')}, collected from the "Key terms" part of {plural(new Set(found.map((f) => f.lesson.id)).size, 'lesson')}.</p>
+        <nav class="gloss-nav" aria-label="Jump to a letter">
+          {groups.map((g) => <a href={`#${idOf(g.letter)}`}>{g.letter}</a>)}
+        </nav>
+        {groups.map((g) => (
+          <section class="gloss-group" aria-labelledby={idOf(g.letter)}>
+            <h2 id={idOf(g.letter)}>{g.letter}</h2>
+            <dl class="terms">
+              {g.items.map((t) => (
+                <div>
+                  <dt><Fragment set:html={inline(t.term)} />{t.extra && <span class="t-extra" set:html={inline(t.extra)} />}</dt>
+                  <dd>
+                    <Fragment set:html={inline(t.def)} />
+                    <span class="gloss-src">
+                      <a href={t.lesson.href}>Lesson {t.lesson.id}: {t.lesson.shortTitle}</a>
+                      {t.also.length > 0 && <span> Also in {t.also.map((l, i) => <>{i > 0 && ', '}<a href={l.href}>{l.id}</a></>)}.</span>}
+                    </span>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))}
+      </>
+    ) : (
+      <p>No lesson has key terms yet. The glossary fills itself as lessons are written.</p>
+    )}
+  </div>
+</StarlightPage>

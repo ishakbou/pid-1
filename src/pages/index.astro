@@ -1,0 +1,246 @@
+---
+// Home, design "Boot": the course starts like a Linux system. Everything is built from the curriculum data.
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import TermWindow from '../components/TermWindow.astro';
+import { course, site, STAGES, plural, about, href } from '../lib/course.mjs';
+import { IC } from '../lib/icons.mjs';
+import { moduleIcon } from '../lib/module-icons.mjs';
+import { moduleCode } from '../lib/module-code.mjs';
+
+const c = course();
+const nLessons = (p) => p.modules.reduce((a, m) => a + m.lessons.length, 0);
+// Where a new reader starts: the first page that exists
+const first = c.order[0] || null;
+const firstLabel = first ? (first.kind === 'lesson' ? `${first.label} ${first.title}` : `Module ${first.module.n}: ${first.module.title}`) : `Module 0: ${c.modules[0].title}`;
+const sample = c.lessons.find((l) => l.id === '1.2' && l.exists) || c.lessons.find((l) => l.exists) || null;
+const title = `${site.course}: ${site.tagline}`;
+const two = (n) => String(n).padStart(2, '0');
+const written = (m) => m.lessons.filter((l) => l.exists).length;
+// A module opens on its overview page. Without one, the card opens the module's row in the list.
+const modLink = (m) => (m.hasOverview ? { href: m.href } : { href: `#m${m.n}`, 'data-jump': m.n });
+---
+
+<StarlightPage frontmatter={{ title, description: site.sentence, template: 'splash', head: [{ tag: 'title', content: title }] }}>
+  <section class="hero" id="overview" aria-labelledby="_top">
+    <div class="hero-text">
+      <h1 id="_top">{site.course}</h1>
+      <p class="tagline">{site.tagline}</p>
+      <p class="sentence">{site.nameNote} {site.sentence}</p>
+      <div class="cta">
+        <a class="btn primary" id="continue" href={first ? first.href : '#m0'} data-first-href={first ? first.href : ''} data-first-label={firstLabel} data-cert-href={href('certificate')}>
+          <span class="btn-kicker">Start with</span><span class="btn-main">{firstLabel}</span><Fragment set:html={IC.right} />
+        </a>
+        <a class="btn" id="start0" href="#m0" data-jump="0" hidden>Start with Module 0</a>
+        <a class="btn" href="#curriculum">See all {c.counts.modules} modules</a>
+      </div>
+      <dl class="facts-row">
+        <div><dt>{c.counts.modules}</dt><dd>modules</dd></div>
+        <div><dt>{c.counts.lessons}</dt><dd>lessons</dd></div>
+        <div><dt>{Math.round(c.counts.lessons * 15 / 60)} h</dt><dd>of guided practice</dd></div>
+        <div><dt>Free</dt><dd>no account needed</dd></div>
+      </dl>
+    </div>
+    <div class="hero-boot">
+      <nav class="boot" aria-label="The course as a boot log: every module, with your progress">
+        <div class="boot-h" aria-hidden="true"><span>pid1 boot log</span><span>tty1</span></div>
+        <div class="boot-b">
+          <p class="bdim">pid1[1]: starting course: {plural(c.counts.modules, 'module')}, {plural(c.counts.lessons, 'lesson')}</p>
+          {c.parts.map((p) => (
+            <div data-part={p.n}>
+              <p class="bt">Part {p.n}: {p.title} <span>{plural(p.modules.length, 'module')}</span></p>
+              <ol>
+                {p.modules.map((m) => (
+                  <li>
+                    <a class="bl" {...modLink(m)} data-module={m.n}>
+                      <span class="tg" aria-hidden="true"></span><span class="nn">{two(m.n)}</span><span class="tt">{m.title}</span><span class="dots" aria-hidden="true"></span><span class="ct" data-count-short>0/{written(m)}</span><span class="visually-hidden"> lessons completed</span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
+          <p class="bprompt" aria-hidden="true">you@pid1:~$ <span class="cur"></span></p>
+        </div>
+      </nav>
+      <p class="term-caption">Every line is a module. A finished module shows <code>OK</code>, and the number at the end of the line is your progress.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="progress" aria-labelledby="progress-h">
+    <header class="sec-head"><div><h2 id="progress-h">Your progress</h2><p>Saved in this browser only. No account, and nothing is sent anywhere.</p></div></header>
+    <div class="overview">
+      <div class="ov-main">
+        <p class="ov-label">Whole course</p>
+        <p class="ov-pct"><span data-overall-pct>0%</span></p>
+        <span class="bar big" aria-hidden="true"><i data-overall-bar></i></span>
+        <p class="ov-count" data-overall-count></p>
+      </div>
+      <div class="ov-tracks">
+        {c.parts.map((p) => (
+          <div class="track" data-part={p.n}>
+            <p class="track-name"><span>Part {p.n}</span> {p.title}</p>
+            <span class="bar" aria-hidden="true"><i></i></span>
+            <p class="track-count" data-part-count></p>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="sec-note">When every lesson is marked as done, you get a <a href={href('certificate')}>certificate with your name on it</a>.</p>
+    <noscript><p class="sec-note">Progress tracking needs JavaScript. The lessons work without it.</p></noscript>
+  </section>
+
+  <section class="sec" id="curriculum" aria-labelledby="curriculum-h">
+    <header class="sec-head">
+      <div><h2 id="curriculum-h">Curriculum</h2><p>{plural(c.counts.modules, 'module')} in three parts. Follow them in order. The list view shows every lesson.</p></div>
+      <div class="seg" role="group" aria-label="Curriculum view">
+        <button type="button" data-view="board" aria-pressed="true"><Fragment set:html={IC.board} /><span>Cards</span></button>
+        <button type="button" data-view="syllabus" aria-pressed="false"><Fragment set:html={IC.rows} /><span>List</span></button>
+      </div>
+    </header>
+    <div class="views" data-view="board">
+      {c.parts.map((p) => (
+        <section class="part" id={`part-${p.n}`} data-part={p.n} aria-labelledby={`part-${p.n}-h`}>
+          <header class="band">
+            <div>
+              <p class="band-k">Part {p.n}</p>
+              <h3 id={`part-${p.n}-h`}>{p.title}</h3>
+            </div>
+            <dl>
+              <div><dt>{p.modules.length}</dt><dd>modules</dd></div>
+              <div><dt>{nLessons(p)}</dt><dd>lessons</dd></div>
+              <div><dt>{about(nLessons(p)).replace(/^about /, '')}</dt><dd>to finish</dd></div>
+            </dl>
+          </header>
+          <div class="part-body">
+            <div class="syl">
+              <div class="syl-head" aria-hidden="true"><span>Module</span><span>Title</span><span>Lessons</span><span>Time</span><span>Progress</span><span></span><span></span></div>
+              <ul class="syl-list">
+                {p.modules.map((m) => (
+                  <li class="syl-item" id={`m${m.n}`} data-module={m.n}>
+                    <h4>
+                      <button type="button" class="syl-row" aria-expanded="false" aria-controls={`m${m.n}-panel`}>
+                        <span class="c-num"><span class="mico" set:html={moduleIcon(m.n, 20)} /><span>Module {m.n}</span></span>
+                        <span class="c-title"><span class="syl-t">{m.title}</span><span class="syl-a">{m.about}</span></span>
+                        <span class="c-les">{plural(m.lessons.length, 'lesson')}</span>
+                        <span class="c-time">{m.time}</span>
+                        <span class="c-prog"><span class="bar" aria-hidden="true"><i></i></span><span class="cnt" data-count>0 of {written(m)}</span><span class="visually-hidden"> completed</span></span>
+                        <span class="c-state"><span class="state" data-state="todo" hidden></span></span>
+                        <span class="c-chev" set:html={IC.down} />
+                      </button>
+                    </h4>
+                    <div class="syl-panel" id={`m${m.n}-panel`} role="region" aria-label={`Lessons of Module ${m.n}: ${m.title}`} hidden>
+                      <ol class="les">
+                        {m.hasOverview && (
+                          <li class="les-extra"><span class="les-check" aria-hidden="true"></span><span class="les-id"></span><span class="les-main"><a class="les-t" href={m.href}>Module overview</a><span class="tag">Overview</span><span class="les-s">What you will learn, what you need first, and a map of the module.</span></span></li>
+                        )}
+                        {m.lessons.map((l) => (
+                          <li data-lesson={l.exists ? l.id : undefined} data-done="false">
+                            <span class="les-check" aria-hidden="true" set:html={IC.check} />
+                            <span class="les-id">{l.id}</span>
+                            <span class="les-main">
+                              {l.exists ? <a class="les-t" href={l.href}>{l.shortTitle}</a> : <span class="les-t">{l.shortTitle}</span>}
+                              {l.project && <span class="tag">Project step</span>}
+                              {!l.exists && <span class="tag tag-soon">Not written yet</span>}
+                              <span class="les-s">{l.summary}</span>
+                            </span>
+                            <span class="visually-hidden" data-done-text></span>
+                          </li>
+                        ))}
+                        {m.cheatSheet && (
+                          <li class="les-extra"><span class="les-check" aria-hidden="true"></span><span class="les-id"></span><span class="les-main">{m.hasCheat ? <a class="les-t" href={m.cheatHref}>Cheat sheet: {m.cheatSheet}</a> : <span class="les-t">Cheat sheet: {m.cheatSheet}</span>}<span class="tag">Cheat sheet</span><span class="les-s">One printable page for this module.</span></span></li>
+                        )}
+                      </ol>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <ul class="board">
+              {p.modules.map((m) => {
+                const code = moduleCode(m.n);
+                return (
+                  <li>
+                    <a class="mcard" {...modLink(m)} data-module={m.n}>
+                      <span class="thumb" aria-hidden="true">
+                        <span class="thumb-lang">{code.lang}</span>
+                        {code.lines.map((ln) => <span class="ln"><span class="pr">{ln.p}</span><span class={ln.k}>{ln.t}</span></span>)}
+                      </span>
+                      <span class="mcard-b">
+                        <span class="mcard-n"><b>Module {m.n}</b><span>{plural(m.lessons.length, 'lesson')}, {m.time.replace(/^about /, '')}</span></span>
+                        <span class="mcard-t">{m.title}</span>
+                        <span class="mcard-a">{m.about}</span>
+                        <span class="mcard-p"><span class="bar" aria-hidden="true"><i></i></span><span><span data-count>0 of {written(m)}</span> done</span><span class="state" data-state="todo" hidden></span></span>
+                      </span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      ))}
+    </div>
+  </section>
+
+  <section class="sec" id="lesson-structure" aria-labelledby="lesson-structure-h">
+    <header class="sec-head">
+      <div><h2 id="lesson-structure-h">How a lesson works</h2><p>Every lesson has the same nine parts, in three stages. A lesson takes 10 to 25 minutes, reading and practice together.</p></div>
+      {sample && <a class="btn small" href={sample.href}>See Lesson {sample.id}<Fragment set:html={IC.right} /></a>}
+    </header>
+    <div class="stages">
+      {STAGES.map((s, si) => (
+        <div class="stage-col">
+          <h3><span class="stage-k">Stage {si + 1}</span>{s.name}</h3>
+          <ol>
+            {s.items.map(([, name, desc], i) => <li><span class="n">{si * 3 + i + 1}</span><span><strong>{name}</strong><span class="d">{desc}</span></span></li>)}
+          </ol>
+        </div>
+      ))}
+    </div>
+    <p class="sec-note">Each module also has an overview page with a mind map of its ideas, a project step, and a printable cheat sheet.</p>
+  </section>
+
+  <section class="sec" id="practice" aria-labelledby="practice-h">
+    <header class="sec-head"><div><h2 id="practice-h">Ways to practice</h2><p>Every lesson has commands to run. Choose where you run them.</p></div></header>
+    <div class="practice-grid">
+      <div class="rt-wrap">
+        <table class="rtable">
+          <thead><tr><th scope="col">Way</th><th scope="col">What it is</th><th scope="col">You install</th><th scope="col">Good for</th></tr></thead>
+          <tbody>
+            <tr><th scope="row" data-label="Way">Practice terminal in the page</th><td data-label="What it is">A terminal beside the lesson: a small real Linux (Alpine Linux with BusyBox) running in your browser, with no internet.</td><td data-label="You install">Nothing</td><td data-label="Good for">The first Linux lessons, on any computer.</td></tr>
+            <tr><th scope="row" data-label="Way">GitHub Codespaces</th><td data-label="What it is">A full Ubuntu in your browser, with every tool of the course.</td><td data-label="You install">Nothing. You need a free GitHub account.</td><td data-label="Good for">The whole course. Free within GitHub's monthly included usage.</td></tr>
+            <tr><th scope="row" data-label="Way">Linux on your own computer</th><td data-label="What it is">WSL on Windows, the built-in terminal on macOS, or the Linux you already use.</td><td data-label="You install">WSL on Windows. Nothing on macOS and Linux.</td><td data-label="Good for">People who want everything on their own machine.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="practice-term">
+        <TermWindow id="hero-term" title="sam@practice: ~" />
+        <p class="term-caption">Try the practice terminal here. It is a small real Linux that runs in your browser: start it and type <code>ls -a</code> or <code>uname</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="project" aria-labelledby="project-h">
+    <header class="sec-head"><div><h2 id="project-h">The project</h2><p>You build and secure one repository, <code>mylab</code>. Every module ends with a project step that adds to it.</p></div></header>
+    <div class="rt-wrap">
+      <table class="rtable ptable">
+        <thead><tr><th scope="col">Module</th><th scope="col">Step</th><th scope="col">What you add</th></tr></thead>
+        {c.parts.map((p) => (
+          <tbody>
+            <tr class="grp"><th colspan="3" scope="colgroup">Part {p.n}: {p.title}</th></tr>
+            {p.modules.map((m) => {
+              const l = m.lessons.find((x) => x.project);
+              return l ? (
+                <tr>
+                  <td data-label="Module" class="pm">Module {m.n}<span>{m.title}</span></td>
+                  <th scope="row" data-label="Step">{l.exists ? <a href={l.href}>{l.shortTitle}</a> : l.shortTitle}</th>
+                  <td data-label="What you add">{l.summary}</td>
+                </tr>
+              ) : null;
+            })}
+          </tbody>
+        ))}
+      </table>
+    </div>
+  </section>
+</StarlightPage>

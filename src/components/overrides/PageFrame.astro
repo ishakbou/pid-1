@@ -1,0 +1,107 @@
+---
+// The frame of every page: the bar on top, then either the lesson workspace or a side rail and one
+// column. It also carries the outline sheet and the small data block the progress script reads.
+import { pageInfo } from '../../lib/route.mjs';
+import { IC } from '../../lib/icons.mjs';
+import { href, plural } from '../../lib/course.mjs';
+import CourseNav from '../CourseNav.astro';
+import SiteFooter from '../SiteFooter.astro';
+
+const info = pageInfo(Astro);
+const c = info.course;
+const m = info.module;
+const isLesson = info.kind === 'lesson';
+const isHome = info.kind === 'home';
+
+// Only what the progress script needs: which lessons exist, module by module.
+const data = {
+  modules: c.modules.map((x) => ({ n: x.n, part: x.part, lessons: x.lessons.filter((l) => l.exists).map((l) => l.id) })),
+  current: isLesson ? info.lesson.id : null,
+  module: m ? m.n : null,
+};
+---
+
+<div class:list={['frame', `kind-${info.kind}`, { 'is-cheat': info.kind === 'cheat' }]} data-kind={info.kind} data-part={m ? m.part : undefined}>
+  <header class={isLesson ? 'lbar' : 'topbar'}><slot name="header" /></header>
+
+  {isLesson ? (
+    <slot />
+  ) : (
+    <div class="app">
+      <aside class:list={['rail', { 'rail-course': !isHome }]} aria-label={isHome ? 'On this page' : 'Course'}>
+        {isHome ? (
+          <>
+            <nav class="rail-group" id="page-nav" aria-label="On this page">
+              <p class="rail-h">On this page</p>
+              <a href="#overview">Overview</a>
+              <a href="#progress">Your progress</a>
+              <a href="#curriculum">Curriculum</a>
+              {c.parts.map((p) => <a class="sub" href={`#part-${p.n}`}>Part {p.n}: {p.title}</a>)}
+              <a href="#lesson-structure">How a lesson works</a>
+              <a href="#practice">Ways to practice</a>
+              <a href="#project">The project</a>
+            </nav>
+            <nav class="rail-group rail-site" aria-label="Site">
+              <p class="rail-h">Site</p>
+              <a href={href('roadmap')}>Roadmap</a>
+              <a href={href('glossary')}>Glossary</a>
+              <a href={href('about')}>About</a>
+            </nav>
+          </>
+        ) : (
+          <CourseNav />
+        )}
+        <div class="rail-foot">
+          <p class="rail-pct" data-overall-pct></p>
+          <span class="bar" aria-hidden="true"><i data-overall-bar></i></span>
+          <p class="rail-note" data-overall-count></p>
+        </div>
+      </aside>
+      <div class="page">
+        <slot />
+        <SiteFooter />
+      </div>
+    </div>
+  )}
+
+  {!isHome && (
+    <div class="sheet-wrap" id="outline-sheet" hidden>
+      <div class="sheet-back" data-sheet-close></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-label="Course outline" tabindex="-1">
+        <div class="sheet-in">
+          <div class="sh-top">
+            <div>
+              {m ? (
+                <>
+                  <p class="sh-k">Part {m.part}: {m.partTitle}</p>
+                  <h2>Module {m.n}: {m.title}</h2>
+                </>
+              ) : (
+                <>
+                  <p class="sh-k">{plural(c.counts.modules, 'module')} in three parts</p>
+                  <h2>Course outline</h2>
+                </>
+              )}
+            </div>
+            <button type="button" class="icon-btn" data-sheet-close aria-label="Close the outline"><Fragment set:html={IC.x} /></button>
+          </div>
+          {m && (
+            <>
+              <p class="sh-meta">{plural(m.lessons.length, 'lesson')}, {m.time}</p>
+              <div class="sh-prog" data-module={m.n}>
+                <span class="bar" aria-hidden="true"><i></i></span><span data-count-long></span>
+              </div>
+            </>
+          )}
+          <CourseNav />
+          <a class="btn small sh-all" href={`${href('')}#curriculum`}>All modules on the home page</a>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+<script type="application/json" id="course-data" set:html={JSON.stringify(data).replace(/</g, '\\u003c')} />
+<script>
+  import '../../scripts/site.js';
+</script>

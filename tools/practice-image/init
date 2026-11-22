@@ -1,0 +1,4 @@
+#!/bin/sh
+# The first program the kernel starts from the initramfs (PID 1). It hands over to BusyBox init,
+# which reads /etc/inittab.
+exec /sbin/init

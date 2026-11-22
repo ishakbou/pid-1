@@ -1,0 +1,11 @@
+---
+// Dark is the main mode. A reader who chose light keeps light.
+// Inline on purpose, so the page never flashes in the wrong mode.
+---
+<script is:inline>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('starlight-theme'); } catch (e) {}
+  document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+})();
+</script>

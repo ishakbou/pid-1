@@ -1,0 +1,95 @@
+---
+// Roadmap: the order to follow, and what a CS-only or a security-focused reader can put first.
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { course, href, plural } from '../lib/course.mjs';
+
+const c = course();
+const mod = (n) => c.modules.find((m) => m.n === n);
+const link = (m) => (m.hasOverview ? m.href : `${href('')}#m${m.n}`);
+
+// What each module needs before it. Used for the "Needs first" column.
+const needs = {
+  0: [], 1: [0], 2: [1], 3: [1], 4: [3], 5: [1, 3], 6: [1], 7: [3], 8: [3, 6, 7],
+  9: [0], 10: [3, 5], 11: [1, 6], 12: [7, 8, 9], 13: [3, 11], 14: [1, 6, 9], 15: [3], 16: [2], 17: [2, 8],
+};
+const paths = [
+  {
+    id: 'full',
+    name: 'The full course',
+    who: 'You want everything, or you are not sure yet. This is the order the course was written in.',
+    steps: [[0, 1, 2, 3], [4, 5, 6, 7, 8], [9, 10, 11, 12, 13, 14], [15, 16, 17]],
+    labels: ['Start', 'Computer science', 'Cybersecurity', 'Career'],
+    note: 'Every module can be read after the ones before it. Nothing is assumed that was not taught earlier.',
+  },
+  {
+    id: 'cs',
+    name: 'Computer science first',
+    who: 'You study CS and you want the programming and systems basics before anything else.',
+    steps: [[0, 1, 2, 3], [4, 5, 7, 8, 6], [15, 16, 17], [9, 10, 12]],
+    labels: ['Start', 'Put first', 'Then', 'Do not skip'],
+    note: 'Modules 11, 13 and 14 can wait. Modules 9, 10 and 12 are for every developer: they explain how the software you write gets attacked, and how to store passwords safely.',
+  },
+  {
+    id: 'sec',
+    name: 'Security first',
+    who: 'You want to reach the security modules quickly.',
+    steps: [[0, 1, 2, 3], [6, 5, 7, 8], [9, 10, 11, 12, 13, 14], [4, 15, 16, 17]],
+    labels: ['Start', 'Put first', 'Then, in order', 'Later'],
+    note: 'Do not jump straight to Part 2. Web security needs the web and databases, system security needs Linux and networking. Module 4 (data structures) can wait until the end.',
+  },
+];
+const description = 'The order to follow, and which modules to put first if you care most about computer science or about security.';
+---
+
+<StarlightPage frontmatter={{ title: 'Roadmap', description }}>
+  <div class="prose page-prose roadmap">
+    <p>The course has {plural(c.counts.modules, 'module')} in three parts. The simple advice is: follow them in order, from Module 0 to Module 17. If you have less time, or one clear goal, use one of the two shorter routes below.</p>
+
+    <h2 id="start">Everybody starts here</h2>
+    <p>Modules 0 to 3 are the base of everything else: your setup, the terminal, git and Python. Every later module uses them. Do them first, whatever your goal is.</p>
+
+    <h2 id="routes">Three routes</h2>
+    <div class="routes">
+      {paths.map((p) => (
+        <section class="route" aria-labelledby={`route-${p.id}`}>
+          <h3 id={`route-${p.id}`}>{p.name}</h3>
+          <p class="route-who">{p.who}</p>
+          <ol class="route-steps">
+            {p.steps.map((group, i) => (
+              <li>
+                <span class="route-k">{p.labels[i]}</span>
+                <ul>
+                  {group.map((n) => <li><a href={link(mod(n))}><span class="route-n">{n}</span>{mod(n).title}</a></li>)}
+                </ul>
+              </li>
+            ))}
+          </ol>
+          <p class="route-note">{p.note}</p>
+        </section>
+      ))}
+    </div>
+
+    <h2 id="modules">What each module needs first</h2>
+    <p>Use this table when you want to read a module out of order. "Needs first" lists the modules it builds on directly.</p>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Modules and what they need first">
+      <table>
+        <thead><tr><th scope="col">Module</th><th scope="col">What you get</th><th scope="col">Needs first</th></tr></thead>
+        <tbody>
+          {c.modules.map((m) => (
+            <tr>
+              <th scope="row"><a href={link(m)}>{m.n}. {m.title}</a></th>
+              <td>{m.about}</td>
+              <td>{needs[m.n].length ? needs[m.n].map((n) => `Module ${n}`).join(', ') : 'Nothing'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="project">One warning about the project</h2>
+    <p>Every module ends with a project step that adds to the same repository, <code>mylab</code>. The steps build on each other. If you skip a module, still do its project step, or at least read it, so that the later steps make sense.</p>
+
+    <h2 id="pace">How fast to go</h2>
+    <p>A lesson takes 10 to 25 minutes, reading and practice together. Three or four lessons a week is a pace most students can keep next to their studies. Typing the commands yourself matters more than speed: a lesson you only read is a lesson you will forget.</p>
+  </div>
+</StarlightPage>

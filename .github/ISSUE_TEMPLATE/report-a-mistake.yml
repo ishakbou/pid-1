@@ -1,0 +1,39 @@
+name: Report a mistake
+description: A wrong command or output, a broken link, or a sentence that is hard to understand.
+title: "Mistake: "
+labels: ["mistake"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. You can also write to me on Telegram: https://t.me/isko_ooo
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: The link to the page with the mistake.
+      placeholder: https://ishakbou.github.io/pid-1/linux/files-and-navigation/
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What is wrong
+      description: Copy the sentence, the command or the output, and say what is wrong with it.
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: Suggested fix
+      description: What it should say, if you know.
+    validations:
+      required: false
+  - type: input
+    id: system
+    attributes:
+      label: Your system
+      description: Where you ran the command, if it matters.
+      placeholder: Ubuntu 24.04 / WSL / macOS / Codespaces / the practice terminal
+    validations:
+      required: false

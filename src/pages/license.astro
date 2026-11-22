@@ -1,0 +1,100 @@
+---
+// License: lessons under CC BY-NC-SA 4.0, code under MIT.
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+import { site } from '../lib/course.mjs';
+
+const year = 2026;
+// The software inside the practice terminal, written by tools/practice-image/install.mjs
+const readJson = (f) => { try { return JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/practice', f), 'utf8')); } catch { return null; } };
+const practice = readJson('config.json') || {};
+const packages: { name: string; version: string; license: string; url: string; repo: string | null }[] = readJson('packages.json') || [];
+const v86 = practice.v86 ? String(practice.v86).replace(/\+.*/, '') : '';
+const alpine = practice.alpine || '';
+const description = 'The lessons are licensed CC BY-NC-SA 4.0 and the code is licensed MIT. What that allows, in plain words.';
+---
+
+<StarlightPage frontmatter={{ title: 'License', description }}>
+  <div class="prose page-prose license">
+    <p>{site.course} uses two licenses: one for the lessons and one for the code.</p>
+
+    <h2 id="lessons">The lessons: CC BY-NC-SA 4.0</h2>
+    <p>All lesson text, diagrams, mind maps, exercises and cheat sheets are licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license</a>.</p>
+    <p>In plain words, you may:</p>
+    <ul>
+      <li><strong>Share</strong>: copy the lessons and give them to anyone, in any format.</li>
+      <li><strong>Adapt</strong>: translate them, shorten them, or build your own material on top of them.</li>
+    </ul>
+    <p>Under these conditions:</p>
+    <ul>
+      <li><strong>Attribution</strong>: give credit to {site.author}, link to this site, and say if you changed something.</li>
+      <li><strong>NonCommercial</strong>: do not sell the lessons or use them in a paid product.</li>
+      <li><strong>ShareAlike</strong>: if you publish a changed version, publish it under this same license.</li>
+    </ul>
+    <p>This summary is not the license. The full legal text is on the Creative Commons site: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en">CC BY-NC-SA 4.0 legal code</a>.</p>
+
+    <h2 id="code">The code: MIT</h2>
+    <p>The code of this site and every code example in the lessons are licensed under the MIT license. You may use the code for anything, including commercial work, as long as you keep the copyright notice.</p>
+    <pre class="plain" tabindex="0"><code>{`MIT License
+
+Copyright (c) ${year} ${site.author}
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.`}</code></pre>
+
+    <h2 id="other">Things made by other people</h2>
+    <ul>
+      <li>The fonts are Red Hat Display, Red Hat Text and Red Hat Mono. All three are licensed under the SIL Open Font License 1.1.</li>
+      <li>The site is built with Astro and Starlight, both MIT licensed.</li>
+      <li>The practice terminal is made of other people's free software too: see <a href="#practice-terminal">the next section</a>.</li>
+      <li>Links in "Go further" lead to other sites. Their content belongs to their authors and has its own license.</li>
+    </ul>
+
+    <h2 id="practice-terminal">The practice terminal: free software by other people</h2>
+    <p>The practice terminal is a small real Linux that runs inside your browser. Everything in it is free software written by other people. It is used as it was published: nothing was changed for this course.</p>
+    <ul>
+      <li><strong>v86</strong>{v86 && ` ${v86}`}, the emulator: a PC made in JavaScript and WebAssembly, by the v86 contributors. BSD-2-Clause license. Source: <a href="https://github.com/copy/v86">github.com/copy/v86</a>.</li>
+      <li><strong>SeaBIOS</strong> and its VGA BIOS (the first code the emulated PC runs), the builds from the <code>bios</code> folder of the v86 repository. LGPL-3.0 license. Source: <a href="https://www.seabios.org/">seabios.org</a> and <a href="https://github.com/copy/v86/tree/master/bios">the v86 repository</a>.</li>
+      <li><strong>xterm.js</strong>, which draws the terminal in the page. MIT license. Source: <a href="https://github.com/xtermjs/xterm.js">github.com/xtermjs/xterm.js</a>.</li>
+      <li><strong>Alpine Linux {alpine}</strong>: the Linux kernel and every program inside the terminal are official, unchanged Alpine Linux packages for 32-bit x86. The table lists each one with its license.</li>
+    </ul>
+    {packages.length > 0 && (
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Software inside the practice terminal">
+        <table>
+          <thead><tr><th scope="col">Package</th><th scope="col">Version</th><th scope="col">License</th><th scope="col">Source</th></tr></thead>
+          <tbody>
+            {packages.map((p) => (
+              <tr>
+                <td><code>{p.name}</code></td>
+                <td>{p.version}</td>
+                <td>{p.license}</td>
+                <td>{p.repo ? <a href={`https://pkgs.alpinelinux.org/package/v3.24/${p.repo}/x86/${p.name}`}>Alpine package page</a> : 'Alpine package'}{p.url && <> · <a href={p.url}>project site</a></>}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+    <p>Where to get the source code: each Alpine package page links to its build recipe in Alpine's <a href="https://gitlab.alpinelinux.org/alpine/aports/-/tree/3.24-stable">aports repository</a> (branch 3.24-stable, the folder named after the source package), and Alpine keeps the source archives it built from at <a href="https://distfiles.alpinelinux.org/distfiles/v3.24/">distfiles.alpinelinux.org</a>. The small script that put the packages together, added the user <code>sam</code> and set up the login is part of this site's source code, under the MIT license.</p>
+    <p>The licenses of these programs (GPL, LGPL, MIT, BSD and others) are not the licenses of the lessons: each program keeps its own.</p>
+
+    <h2 id="questions">Questions</h2>
+    <p>If you want to use the lessons in a way this page does not cover, <a href={site.telegramUrl}>ask on Telegram</a>.</p>
+  </div>
+</StarlightPage>

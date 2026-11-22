@@ -1,0 +1,34 @@
+---
+// Lesson pages are a split workspace: the lesson on the left, the practice terminal docked on the right
+// (only when the lesson says practiceTerminal: true). Every other page is one column.
+import { pageInfo } from '../../lib/route.mjs';
+import { IC } from '../../lib/icons.mjs';
+import SiteFooter from '../SiteFooter.astro';
+import TermWindow from '../TermWindow.astro';
+
+const info = pageInfo(Astro);
+const terminal = info.kind === 'lesson' && info.data.practiceTerminal === true;
+---
+
+{info.kind === 'lesson' ? (
+  <>
+    <div class:list={['work', { 'no-term': !terminal }]} id="work" data-terminal={terminal ? 'true' : 'false'}>
+      <div class="reader">
+        <div class="reader-in"><slot /></div>
+        <div class="reader-in reader-foot"><SiteFooter /></div>
+      </div>
+      {terminal && (
+        <>
+          <div class="divider" id="divider" role="separator" aria-orientation="vertical" aria-label="Resize the terminal pane" tabindex="0"><span class="grip" aria-hidden="true"></span></div>
+          <aside class="termpane" id="termpane" aria-label="Practice terminal">
+            <TermWindow id="lesson-term" title="Practice terminal" hide />
+            <p class="term-caption">A real small Linux (Alpine Linux with BusyBox), not Ubuntu: a few commands print their results a little differently from the lesson. It has no internet and no <code>apt</code>. For those lessons, use Codespaces or your own Linux.</p>
+          </aside>
+        </>
+      )}
+    </div>
+    {terminal && <button type="button" class="term-fab" id="term-fab" aria-controls="termpane"><Fragment set:html={IC.term} /><span>Terminal</span></button>}
+  </>
+) : (
+  <slot />
+)}

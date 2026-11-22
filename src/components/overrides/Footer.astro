@@ -1,0 +1,48 @@
+---
+// The end of a page: "Mark as complete" on lessons, the previous and next page, and the page foot
+// with the Telegram link and the date of the last change. No edit link and no issue link.
+import { pageInfo, formatDate } from '../../lib/route.mjs';
+import { IC } from '../../lib/icons.mjs';
+import { site } from '../../lib/course.mjs';
+
+const info = pageInfo(Astro);
+const { kind, prev, next, route } = info;
+const updated = formatDate(route.lastUpdated);
+const kicker = (o) => (o.kind === 'lesson' ? `lesson` : o.kind === 'overview' ? 'module' : 'page');
+const label = (o) => (o.kind === 'lesson' ? `${o.label} ${o.title}` : o.kind === 'overview' ? `Module ${o.module.n}: ${o.title}` : o.title);
+---
+
+{kind === 'lesson' && (
+  <section class="complete" aria-labelledby="complete-h">
+    <div>
+      <h2 id="complete-h">Finished this lesson?</h2>
+      <p>Your progress is saved in this browser only. No account, and nothing is sent anywhere.</p>
+    </div>
+    <button type="button" class="btn primary" id="complete" aria-pressed="false"><span class="c-check" set:html={IC.check} /><span class="c-label">Mark as complete</span></button>
+  </section>
+)}
+
+{(kind === 'lesson' || kind === 'overview' || kind === 'cheat') && (prev || next) && (
+  <nav class:list={['nextprev', { 'only-next': !prev }]} aria-label="Previous and next page">
+    {prev && (
+      <a class="np prev" href={prev.href}>
+        <span class="np-k"><Fragment set:html={IC.left} />Previous {kicker(prev)}</span>
+        <span class="np-t">{label(prev)}</span>
+      </a>
+    )}
+    {next && (
+      <a class="np next" href={next.href}>
+        <span class="np-k">Next {kicker(next)}<Fragment set:html={IC.right} /></span>
+        <span class="np-t">{label(next)}</span>
+        <span class="np-s">{next.summary}</span>
+      </a>
+    )}
+  </nav>
+)}
+
+{kind !== 'home' && (
+  <p class="pagefoot no-print">
+    <a href={site.telegramUrl}>Found a mistake? Tell me on Telegram</a>
+    {updated && <span>Last updated: {updated}</span>}
+  </p>
+)}

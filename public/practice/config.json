@@ -1,0 +1,26 @@
+{
+ "note": "Written by tools/practice-image/install.mjs. Read by src/scripts/terminal/v86.js and the License page.",
+ "alpine": "v3.24 (x86, 32-bit)",
+ "v86": "0.5.473+g315b2b0",
+ "bios": "seabios.bin",
+ "vgaBios": "vgabios.bin",
+ "kernel": "vmlinuz.bin",
+ "initrd": "initrd.img",
+ "cmdline": "console=ttyS0 quiet loglevel=3 mitigations=off",
+ "memoryMB": 256,
+ "sizes": {
+  "vmlinuz.bin": 8110592,
+  "initrd.img": 21253842,
+  "seabios.bin": 131072,
+  "vgabios.bin": 36352,
+  "SOURCES.txt": 4402
+ },
+ "sha256": {
+  "vmlinuz.bin": "09189a0a9fe34bdfc775ab85bcf91eeb8f3c8977d15be249df99b9e94f386a12",
+  "initrd.img": "b9fa6eca832a701aff431538fedd81c03906e4b35bb7bc37538a63aa37c57b83",
+  "seabios.bin": "73e3f359102e3a9982c35fce98eb7cd08f18303ac7f1ba6ebfbe6cdc1c244d98",
+  "vgabios.bin": "a4bc0d80cc3ca028c73dafa8fee396b8d054ce87ebd8abfbd31b06b437607880",
+  "SOURCES.txt": "4d1be441f8123f42a170f45903a0660d34e004abfb3f9302a3a8758d72c7119a"
+ },
+ "downloadBytes": 31899062
+}

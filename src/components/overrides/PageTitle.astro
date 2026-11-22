@@ -1,0 +1,70 @@
+---
+// The head of a page: number and module, title, and the small facts (time, terminal, last update).
+const PAGE_TITLE_ID = '_top'; // the skip link of Starlight points here
+import { pageInfo, formatDate } from '../../lib/route.mjs';
+import { IC } from '../../lib/icons.mjs';
+import { plural } from '../../lib/course.mjs';
+import { moduleIcon } from '../../lib/module-icons.mjs';
+
+const info = pageInfo(Astro);
+const { kind, data, route } = info;
+const m = info.module;
+const updated = formatDate(route.lastUpdated);
+---
+
+{kind === 'lesson' && (
+  <header class="lhead">
+    <div class="lband">
+      <div>
+        <p class="lband-k">Part {m.part}: {m.partTitle}, Module {m.n}</p>
+        <p class="lband-t">{m.title}</p>
+      </div>
+      <p class="lband-pos">Lesson {info.lesson.index + 1} of {m.lessons.length}</p>
+      <ol class="segs" aria-hidden="true">
+        {m.lessons.map((l) => <li data-lesson={l.exists ? l.id : undefined} class={l.id === info.lesson.id ? 'here' : undefined}></li>)}
+      </ol>
+    </div>
+    <p class="lnum"><span class="mico sm" set:html={moduleIcon(m.n, 16)} /><span>Lesson {info.lesson.id}</span></p>
+    <h1 id={PAGE_TITLE_ID}>{data.title}</h1>
+    <ul class="chips">
+      {data.time && <li><Fragment set:html={IC.clock} /><span>{data.time}</span></li>}
+      {info.lesson.project && <li><span>Project step</span></li>}
+      {data.practiceTerminal && <li><Fragment set:html={IC.term} /><span>Works in the practice terminal</span></li>}
+      {updated && <li><span>Updated {updated}</span></li>}
+    </ul>
+  </header>
+)}
+
+{kind === 'overview' && (
+  <header class="lhead">
+    <span class="mico lg" set:html={moduleIcon(m.n, 32)} />
+    <p class="lnum"><span>Module {m.n}</span><span class="dot" aria-hidden="true"></span><span>Part {m.part}: {m.partTitle}</span></p>
+    <h1 id={PAGE_TITLE_ID}>{m.title}</h1>
+    {data.description && <p class="lead">{data.description}</p>}
+    <ul class="chips">
+      <li><span>{plural(m.lessons.length, 'lesson')}</span></li>
+      <li><Fragment set:html={IC.clock} /><span>{m.time}</span></li>
+      <li class="chip-prog" data-module={m.n}><span class="bar" aria-hidden="true"><i></i></span><span data-count-long></span></li>
+    </ul>
+  </header>
+)}
+
+{kind === 'cheat' && (
+  <header class="lhead">
+    <p class="lnum"><span class="mico sm" set:html={moduleIcon(m.n, 16)} /><span>Cheat sheet</span><span class="dot" aria-hidden="true"></span><span>Module {m.n}: {m.title}</span></p>
+    <h1 id={PAGE_TITLE_ID}>{data.title.replace(/^Cheat sheet:\s*/i, '')}</h1>
+    {data.description && <p class="lead">{data.description}</p>}
+    <ul class="chips no-print">
+      <li><span>Made to be printed</span></li>
+      {updated && <li><span>Updated {updated}</span></li>}
+    </ul>
+    <p class="print-row no-print"><button type="button" class="btn small" data-print><Fragment set:html={IC.print} /><span>Print this page</span></button></p>
+  </header>
+)}
+
+{kind === 'page' && (
+  <header class="lhead phead">
+    <h1 id={PAGE_TITLE_ID}>{data.title}</h1>
+    {data.description && <p class="lead">{data.description}</p>}
+  </header>
+)}

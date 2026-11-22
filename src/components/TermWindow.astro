@@ -1,0 +1,33 @@
+---
+// One practice terminal window. The behavior is in src/scripts/terminal/v86.js.
+// Nothing is downloaded until the reader presses "Start practice terminal".
+import fs from 'node:fs';
+import path from 'node:path';
+import { IC } from '../lib/icons.mjs';
+interface Props { id: string; title: string; hide?: boolean }
+const { id, title, hide = false } = Astro.props;
+// The download size, read from the image's config at build time
+let size = '';
+try {
+  const cfg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/practice/config.json'), 'utf8'));
+  size = String(Math.round(cfg.downloadBytes / 1048576));
+} catch { /* no image: the sentence below leaves the size out */ }
+---
+<div class="termwin" id={id} data-state="idle">
+  <div class="tw-bar">
+    <span class="tw-title"><Fragment set:html={IC.term} /><span>{title}</span><span class="tw-sim">real Linux</span></span>
+    <span class="tw-actions">
+      {hide && <button type="button" class="tw-btn tw-close" data-term-hide aria-label="Hide the terminal"><Fragment set:html={IC.x} /><span>Hide</span></button>}
+      <button type="button" class="tw-btn" data-term-reset aria-label="Restart the terminal with a fresh system"><Fragment set:html={IC.reset} /><span>Reset</span></button>
+    </span>
+  </div>
+  <div class="tw-body" data-term>
+    <div class="tw-start">
+      <p class="tw-start-h">A small real Linux, inside this page</p>
+      <p>It runs in your browser: Alpine Linux with BusyBox. You are the user <code>sam</code>, at home in <code>/home/sam</code>. It has no internet, and reloading the page gives you a fresh system.</p>
+      <button type="button" class="tw-startbtn" data-term-start><Fragment set:html={IC.term} /><span>Start practice terminal</span></button>
+      <p class="tw-status" role="status" aria-live="polite">{size ? `The first start downloads about ${size} MB.` : 'The first start downloads the small Linux.'}</p>
+    </div>
+    <div class="tw-xterm" hidden></div>
+  </div>
+</div>

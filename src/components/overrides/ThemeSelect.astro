@@ -1,0 +1,18 @@
+---
+import { IC } from '../../lib/icons.mjs';
+---
+<button type="button" class="icon-btn" id="theme" aria-label="Switch to light mode">
+  <span class="t-sun" set:html={IC.sun} /><span class="t-moon" set:html={IC.moon} />
+</button>
+<script>
+  const root = document.documentElement;
+  const btn = document.getElementById('theme');
+  const label = () => btn?.setAttribute('aria-label', root.getAttribute('data-theme') === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  btn?.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('starlight-theme', next); } catch { /* storage is blocked: the choice lasts for this page */ }
+    label();
+  });
+  label();
+</script>

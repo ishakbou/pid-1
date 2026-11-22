@@ -1,0 +1,38 @@
+---
+// About: who made the course and why.
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { course, site, href, plural } from '../lib/course.mjs';
+
+const c = course();
+const description = `Who made ${site.course}, why it exists, and how to reach the author.`;
+---
+
+<StarlightPage frontmatter={{ title: 'About', description }}>
+  <div class="prose page-prose about">
+    <h2 id="course">The course</h2>
+    <p>{site.course} is a free course on the practical basics of computer science and cybersecurity. It has {plural(c.counts.modules, 'module')} and {plural(c.counts.lessons, 'lesson')}. It starts with your first terminal command and ends with a finished portfolio project.</p>
+    <p>It is for computer science and cybersecurity students, in any year, and for people who learn alone. It assumes no experience with the terminal, with git or with programming.</p>
+    <p>The name comes from Linux. {site.nameNote}</p>
+
+    <h2 id="why">Why it exists</h2>
+    <p>University courses often explain the theory and skip the practice: how to use a terminal, how to work with git, how a request travels over a network, how to read a log. Students are expected to pick these things up alone. This course teaches them step by step, with commands you type yourself.</p>
+
+    <h2 id="author">Who made it</h2>
+    <p>{site.course} was created by <strong>{site.author}</strong>. He planned the course, decided what it teaches and in which order, and he is the person to contact about it.</p>
+    <p>The course is free, and it stays free. If it helped you, the best thanks is to tell another student about it.</p>
+
+    <h2 id="contact">Contact</h2>
+    <ul>
+      <li>Telegram: <a href={site.telegramUrl} rel="me">@{site.telegram}</a></li>
+      <li>LinkedIn: <a href={site.linkedin} rel="me">{site.author}</a></li>
+    </ul>
+    <p>Found a mistake in a lesson? <a href={site.telegramUrl}>Tell me on Telegram</a>. Say which lesson it is and what is wrong. Every report makes the course better for the next reader.</p>
+
+    <h2 id="how">How it is made</h2>
+    <ul>
+      <li>Commands and code examples are run on Ubuntu before a lesson is published, so the outputs you see are real.</li>
+      <li>There is no account, no advertising and no tracking. Your progress is saved in your own browser and nowhere else.</li>
+      <li>The lessons are free to share and adapt, with credit, for non-commercial use. See the <a href={href('license')}>license</a>.</li>
+    </ul>
+  </div>
+</StarlightPage>

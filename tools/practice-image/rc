@@ -1,0 +1,15 @@
+#!/bin/sh
+# Runs once at boot, as root, before sam is logged in.
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev 2>/dev/null
+mkdir -p /dev/pts /dev/shm
+mount -t devpts devpts /dev/pts
+mount -t tmpfs -o mode=1777 tmpfs /dev/shm
+mount -t tmpfs -o mode=1777 tmpfs /tmp
+hostname -F /etc/hostname
+ip link set lo up 2>/dev/null
+# The kernel's messages would print over the reader's work: keep only the serious ones
+echo 1 > /proc/sys/kernel/printk
+# Tell the page that the system is ready (it waits for this line before it shows the terminal)
+echo "practice: system ready"

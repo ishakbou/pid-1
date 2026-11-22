@@ -1,0 +1,11 @@
+node_modules/
+preview/
+dist/
+.astro/
+# test lab: keep the tool, ignore the big and private files
+lab/*.img
+lab/*.qcow2
+lab/id_ed25519*
+lab/console*.log
+lab/qemu*.pid
+lab/SHA256SUMS

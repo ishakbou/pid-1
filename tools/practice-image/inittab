@@ -1,0 +1,6 @@
+# BusyBox init: prepare the system once, then log the user sam in on the serial port (the page's terminal).
+# When sam's shell ends (exit), a new login starts.
+::sysinit:/etc/practice-rc
+ttyS0::respawn:/bin/login -f sam
+::ctrlaltdel:/sbin/reboot
+::shutdown:/bin/umount -a -r

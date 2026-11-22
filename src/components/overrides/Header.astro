@@ -1,0 +1,58 @@
+---
+// The top bar. On a lesson it is the lesson bar: where you are, the module progress,
+// previous and next, the outline and the terminal. Elsewhere: the name, the search, the theme.
+import Search from 'virtual:starlight/components/Search';
+import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+import { pageInfo } from '../../lib/route.mjs';
+import { IC } from '../../lib/icons.mjs';
+import { site, href } from '../../lib/course.mjs';
+
+const info = pageInfo(Astro);
+const isLesson = info.kind === 'lesson';
+const m = info.module;
+const navLabel = (o) => (o.kind === 'lesson' ? o.label : o.kind === 'overview' ? 'Overview' : 'Cheat sheet');
+const navTitle = (o, dir) => `${dir === 'prev' ? 'Previous' : 'Next'}: ${o.kind === 'lesson' ? `${o.label} ${o.title}` : o.kind === 'overview' ? `Module ${o.module.n} overview` : o.title}`;
+---
+
+<a class="brand" href={href('')} aria-label={`${site.course}, course home`}>
+  <span class="brand-mark" aria-hidden="true">1</span><span class="brand-name">{site.course}</span>
+</a>
+
+{isLesson ? (
+  <>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href={`${href('')}#part-${m.part}`}>Part {m.part}: {m.partTitle}</a>
+      <span aria-hidden="true">/</span>
+      <a href={m.hasOverview ? m.href : `${href('')}#m${m.n}`}>Module {m.n}: {m.title}</a>
+    </nav>
+    <div class="lbar-pos">
+      <span class="lbar-count">Lesson {info.lesson.index + 1} of {m.lessons.length}</span>
+      <span class="bar" aria-hidden="true"><i data-module-bar></i></span>
+      <span class="lbar-done" data-module-count></span>
+    </div>
+    <div class="lbar-actions">
+      <nav class="lbar-nav" aria-label="Previous and next page">
+        {info.prev && <a class="nav-btn prev" href={info.prev.href} title={navTitle(info.prev, 'prev')} aria-label={navTitle(info.prev, 'prev')}><Fragment set:html={IC.left} /><span>{navLabel(info.prev)}</span></a>}
+        {info.next && <a class="nav-btn next" href={info.next.href} title={navTitle(info.next, 'next')} aria-label={navTitle(info.next, 'next')}><span>{navLabel(info.next)}</span><Fragment set:html={IC.right} /></a>}
+      </nav>
+      <button type="button" class="bar-btn" id="outline-btn" aria-haspopup="dialog" aria-expanded="false"><Fragment set:html={IC.list} /><span>Outline</span></button>
+      {info.data.practiceTerminal && <button type="button" class="bar-btn" id="term-toggle" aria-pressed="true"><Fragment set:html={IC.panel} /><span>Terminal</span></button>}
+      <div class="lbar-search"><Search /></div>
+      <ThemeSelect />
+    </div>
+  </>
+) : (
+  <>
+    <nav class="top-nav" aria-label="Site">
+      <a href={`${href('')}#curriculum`}>Curriculum</a>
+      <a href={href('roadmap')}>Roadmap</a>
+      <a href={href('glossary')}>Glossary</a>
+      <a href={href('about')}>About</a>
+    </nav>
+    <div class="top-search"><Search /></div>
+    <div class="top-actions">
+      {info.kind !== 'home' && <button type="button" class="bar-btn outline-narrow" id="outline-btn" aria-haspopup="dialog" aria-expanded="false"><Fragment set:html={IC.list} /><span>Outline</span></button>}
+      <ThemeSelect />
+    </div>
+  </>
+)}

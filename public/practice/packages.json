@@ -1,0 +1,426 @@
+[
+ {
+  "name": "acl-libs",
+  "version": "2.3.2-r1",
+  "license": "LGPL-2.1-or-later AND GPL-2.0-or-later",
+  "url": "https://savannah.nongnu.org/projects/acl",
+  "origin": "acl",
+  "repo": "main"
+ },
+ {
+  "name": "alpine-baselayout",
+  "version": "3.7.2-r1",
+  "license": "GPL-2.0-only",
+  "url": "https://gitlab.alpinelinux.org/alpine/aports/-/tree/master/main/alpine-baselayout",
+  "origin": "alpine-baselayout",
+  "repo": "main"
+ },
+ {
+  "name": "alpine-baselayout-data",
+  "version": "3.7.2-r1",
+  "license": "GPL-2.0-only",
+  "url": "https://gitlab.alpinelinux.org/alpine/aports/-/tree/master/main/alpine-baselayout",
+  "origin": "alpine-baselayout",
+  "repo": "main"
+ },
+ {
+  "name": "alpine-keys",
+  "version": "2.6-r0",
+  "license": "MIT",
+  "url": "https://alpinelinux.org",
+  "origin": "alpine-keys",
+  "repo": "main"
+ },
+ {
+  "name": "alpine-release",
+  "version": "3.24.4-r0",
+  "license": "MIT",
+  "url": "https://alpinelinux.org",
+  "origin": "alpine-base",
+  "repo": "main"
+ },
+ {
+  "name": "bash",
+  "version": "5.3.9-r1",
+  "license": "GPL-3.0-or-later",
+  "url": "https://www.gnu.org/software/bash/bash.html",
+  "origin": "bash",
+  "repo": "main"
+ },
+ {
+  "name": "brotli-libs",
+  "version": "1.2.1-r0",
+  "license": "MIT",
+  "url": "https://github.com/google/brotli",
+  "origin": "brotli",
+  "repo": "main"
+ },
+ {
+  "name": "busybox",
+  "version": "1.37.0-r31",
+  "license": "GPL-2.0-only",
+  "url": "https://busybox.net/",
+  "origin": "busybox",
+  "repo": "main"
+ },
+ {
+  "name": "busybox-binsh",
+  "version": "1.37.0-r31",
+  "license": "GPL-2.0-only",
+  "url": "https://busybox.net/",
+  "origin": "busybox",
+  "repo": "main"
+ },
+ {
+  "name": "c-ares",
+  "version": "1.34.9-r0",
+  "license": "MIT",
+  "url": "https://c-ares.org/",
+  "origin": "c-ares",
+  "repo": "main"
+ },
+ {
+  "name": "ca-certificates-bundle",
+  "version": "20261020-r0",
+  "license": "MPL-2.0 AND MIT",
+  "url": "https://www.mozilla.org/en-US/about/governance/policies/security-group/certs/",
+  "origin": "ca-certificates",
+  "repo": "main"
+ },
+ {
+  "name": "coreutils",
+  "version": "9.11-r0",
+  "license": "GPL-3.0-or-later",
+  "url": "https://www.gnu.org/software/coreutils/",
+  "origin": "coreutils",
+  "repo": "main"
+ },
+ {
+  "name": "coreutils-env",
+  "version": "9.11-r0",
+  "license": "GPL-3.0-or-later",
+  "url": "https://www.gnu.org/software/coreutils/",
+  "origin": "coreutils",
+  "repo": "main"
+ },
+ {
+  "name": "coreutils-fmt",
+  "version": "9.11-r0",
+  "license": "GPL-3.0-or-later",
+  "url": "https://www.gnu.org/software/coreutils/",
+  "origin": "coreutils",
+  "repo": "main"
+ },
+ {
+  "name": "coreutils-sha512sum",
+  "version": "9.11-r0",
+  "license": "GPL-3.0-or-later",
+  "url": "https://www.gnu.org/software/coreutils/",
+  "origin": "coreutils",
+  "repo": "main"
+ },
+ {
+  "name": "gdbm",
+  "version": "1.26-r0",
+  "license": "GPL-3.0-or-later",
+  "url": "https://www.gnu.org/software/gdbm/",
+  "origin": "gdbm",
+  "repo": "main"
+ },
+ {
+  "name": "git",
+  "version": "2.54.1-r0",
+  "license": "GPL-2.0-only",
+  "url": "https://www.git-scm.com/",
+  "origin": "git",
+  "repo": "main"
+ },
+ {
+  "name": "git-init-template",
+  "version": "2.54.1-r0",
+  "license": "GPL-2.0-only",
+  "url": "https://www.git-scm.com/",
+  "origin": "git",
+  "repo": "main"
+ },
+ {
+  "name": "libattr",
+  "version": "2.5.2-r2",
+  "license": "LGPL-2.1-or-later",
+  "url": "https://savannah.nongnu.org/projects/attr",
+  "origin": "attr",
+  "repo": "main"
+ },
+ {
+  "name": "libbz2",
+  "version": "1.0.8-r6",
+  "license": "bzip2-1.0.6",
+  "url": "https://sourceware.org/bzip2/",
+  "origin": "bzip2",
+  "repo": "main"
+ },
+ {
+  "name": "libcrypto3",
+  "version": "3.5.9-r0",
+  "license": "Apache-2.0",
+  "url": "https://www.openssl.org/",
+  "origin": "openssl",
+  "repo": "main"
+ },
+ {
+  "name": "libcurl",
+  "version": "8.23.0-r0",
+  "license": "curl",
+  "url": "https://curl.se/",
+  "origin": "curl",
+  "repo": "main"
+ },
+ {
+  "name": "libexpat",
+  "version": "2.10.0-r0",
+  "license": "MIT",
+  "url": "https://libexpat.github.io/",
+  "origin": "expat",
+  "repo": "main"
+ },
+ {
+  "name": "libffi",
+  "version": "3.5.2-r1",
+  "license": "MIT",
+  "url": "https://sourceware.org/libffi/",
+  "origin": "libffi",
+  "repo": "main"
+ },
+ {
+  "name": "libgcc",
+  "version": "15.2.0-r5",
+  "license": "GPL-2.0-or-later AND LGPL-2.1-or-later",
+  "url": "https://gcc.gnu.org",
+  "origin": "gcc",
+  "repo": "main"
+ },
+ {
+  "name": "libidn2",
+  "version": "2.3.8-r0",
+  "license": "GPL-2.0-or-later OR LGPL-3.0-or-later",
+  "url": "https://www.gnu.org/software/libidn#libidn2",
+  "origin": "libidn2",
+  "repo": "main"
+ },
+ {
+  "name": "libncursesw",
+  "version": "6.6_p20260516-r0",
+  "license": "X11",
+  "url": "https://invisible-island.net/ncurses/",
+  "origin": "ncurses",
+  "repo": "main"
+ },
+ {
+  "name": "libpanelw",
+  "version": "6.6_p20260516-r0",
+  "license": "X11",
+  "url": "https://invisible-island.net/ncurses/",
+  "origin": "ncurses",
+  "repo": "main"
+ },
+ {
+  "name": "libpsl",
+  "version": "0.21.5-r3",
+  "license": "MIT",
+  "url": "https://rockdaboot.github.io/libpsl",
+  "origin": "libpsl",
+  "repo": "main"
+ },
+ {
+  "name": "libssl3",
+  "version": "3.5.9-r0",
+  "license": "Apache-2.0",
+  "url": "https://www.openssl.org/",
+  "origin": "openssl",
+  "repo": "main"
+ },
+ {
+  "name": "libstdc++",
+  "version": "15.2.0-r5",
+  "license": "GPL-2.0-or-later AND LGPL-2.1-or-later",
+  "url": "https://gcc.gnu.org",
+  "origin": "gcc",
+  "repo": "main"
+ },
+ {
+  "name": "libunistring",
+  "version": "1.4.2-r0",
+  "license": "GPL-2.0-or-later OR LGPL-3.0-or-later",
+  "url": "https://www.gnu.org/software/libunistring/",
+  "origin": "libunistring",
+  "repo": "main"
+ },
+ {
+  "name": "mpdecimal",
+  "version": "4.0.1-r0",
+  "license": "BSD-2-Clause",
+  "url": "https://www.bytereef.org/mpdecimal/index.html",
+  "origin": "mpdecimal",
+  "repo": "main"
+ },
+ {
+  "name": "musl",
+  "version": "1.2.6-r3",
+  "license": "MIT",
+  "url": "https://musl.libc.org/",
+  "origin": "musl",
+  "repo": "main"
+ },
+ {
+  "name": "musl-utils",
+  "version": "1.2.6-r3",
+  "license": "MIT AND BSD-2-Clause AND GPL-2.0-or-later",
+  "url": "https://musl.libc.org/",
+  "origin": "musl",
+  "repo": "main"
+ },
+ {
+  "name": "nano",
+  "version": "9.3-r0",
+  "license": "GPL-3.0-or-later",
+  "url": "https://www.nano-editor.org/",
+  "origin": "nano",
+  "repo": "main"
+ },
+ {
+  "name": "ncurses-terminfo-base",
+  "version": "6.6_p20260516-r0",
+  "license": "X11",
+  "url": "https://invisible-island.net/ncurses/",
+  "origin": "ncurses",
+  "repo": "main"
+ },
+ {
+  "name": "nghttp2-libs",
+  "version": "1.70.0-r0",
+  "license": "MIT",
+  "url": "https://nghttp2.org",
+  "origin": "nghttp2",
+  "repo": "main"
+ },
+ {
+  "name": "pcre2",
+  "version": "10.49-r0",
+  "license": "BSD-3-Clause",
+  "url": "https://pcre.org/",
+  "origin": "pcre2",
+  "repo": "main"
+ },
+ {
+  "name": "pyc",
+  "version": "3.14.10-r1",
+  "license": "PSF-2.0",
+  "url": "https://www.python.org/",
+  "origin": "python3",
+  "repo": "main"
+ },
+ {
+  "name": "python3",
+  "version": "3.14.10-r1",
+  "license": "PSF-2.0",
+  "url": "https://www.python.org/",
+  "origin": "python3",
+  "repo": "main"
+ },
+ {
+  "name": "python3-pyc",
+  "version": "3.14.10-r1",
+  "license": "PSF-2.0",
+  "url": "https://www.python.org/",
+  "origin": "python3",
+  "repo": "main"
+ },
+ {
+  "name": "python3-pycache-pyc0",
+  "version": "3.14.10-r1",
+  "license": "PSF-2.0",
+  "url": "https://www.python.org/",
+  "origin": "python3",
+  "repo": "main"
+ },
+ {
+  "name": "readline",
+  "version": "8.3.3-r1",
+  "license": "GPL-3.0-or-later",
+  "url": "https://tiswww.cwru.edu/php/chet/readline/rltop.html",
+  "origin": "readline",
+  "repo": "main"
+ },
+ {
+  "name": "scanelf",
+  "version": "1.3.9-r1",
+  "license": "GPL-2.0-only",
+  "url": "https://wiki.gentoo.org/wiki/Hardened/PaX_Utilities",
+  "origin": "pax-utils",
+  "repo": "main"
+ },
+ {
+  "name": "skalibs-libs",
+  "version": "2.15.0.0-r0",
+  "license": "ISC",
+  "url": "https://skarnet.org/software/skalibs/",
+  "origin": "skalibs",
+  "repo": "main"
+ },
+ {
+  "name": "sqlite-libs",
+  "version": "3.53.4-r0",
+  "license": "blessing",
+  "url": "https://www.sqlite.org/",
+  "origin": "sqlite",
+  "repo": "main"
+ },
+ {
+  "name": "ssl_client",
+  "version": "1.37.0-r31",
+  "license": "GPL-2.0-only",
+  "url": "https://busybox.net/",
+  "origin": "busybox",
+  "repo": "main"
+ },
+ {
+  "name": "utmps-libs",
+  "version": "0.1.3.3-r0",
+  "license": "ISC",
+  "url": "https://skarnet.org/software/utmps/",
+  "origin": "utmps",
+  "repo": "main"
+ },
+ {
+  "name": "xz-libs",
+  "version": "5.8.4-r0",
+  "license": "GPL-2.0-or-later AND 0BSD AND Public-Domain AND LGPL-2.1-or-later",
+  "url": "https://tukaani.org/xz/",
+  "origin": "xz",
+  "repo": "main"
+ },
+ {
+  "name": "zlib",
+  "version": "1.3.2-r1",
+  "license": "Zlib",
+  "url": "https://zlib.net/",
+  "origin": "zlib",
+  "repo": "main"
+ },
+ {
+  "name": "zstd-libs",
+  "version": "1.5.7-r2",
+  "license": "BSD-3-Clause OR GPL-2.0-or-later",
+  "url": "https://facebook.github.io/zstd/",
+  "origin": "zstd",
+  "repo": "main"
+ },
+ {
+  "name": "linux-virt",
+  "version": "6.18.64-r0",
+  "license": "GPL-2.0-only",
+  "url": "https://www.kernel.org/",
+  "origin": "linux-lts",
+  "repo": "main"
+ }
+]

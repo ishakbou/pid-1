@@ -1,0 +1,58 @@
+Practice terminal image, built 2026-11-21 from Alpine Linux v3.24 (x86, 32-bit).
+Every package is an official, unchanged Alpine Linux package. Sources: https://pkgs.alpinelinux.org/
+(each package page links to its build recipe in aports) and https://distfiles.alpinelinux.org/
+
+package	version	license	web site	Alpine source package
+acl-libs	2.3.2-r1	LGPL-2.1-or-later AND GPL-2.0-or-later	https://savannah.nongnu.org/projects/acl	acl
+alpine-baselayout	3.7.2-r1	GPL-2.0-only	https://gitlab.alpinelinux.org/alpine/aports/-/tree/master/main/alpine-baselayout	alpine-baselayout
+alpine-baselayout-data	3.7.2-r1	GPL-2.0-only	https://gitlab.alpinelinux.org/alpine/aports/-/tree/master/main/alpine-baselayout	alpine-baselayout
+alpine-keys	2.6-r0	MIT	https://alpinelinux.org	alpine-keys
+alpine-release	3.24.4-r0	MIT	https://alpinelinux.org	alpine-base
+bash	5.3.9-r1	GPL-3.0-or-later	https://www.gnu.org/software/bash/bash.html	bash
+brotli-libs	1.2.1-r0	MIT	https://github.com/google/brotli	brotli
+busybox	1.37.0-r31	GPL-2.0-only	https://busybox.net/	busybox
+busybox-binsh	1.37.0-r31	GPL-2.0-only	https://busybox.net/	busybox
+c-ares	1.34.9-r0	MIT	https://c-ares.org/	c-ares
+ca-certificates-bundle	20261020-r0	MPL-2.0 AND MIT	https://www.mozilla.org/en-US/about/governance/policies/security-group/certs/	ca-certificates
+coreutils	9.11-r0	GPL-3.0-or-later	https://www.gnu.org/software/coreutils/	coreutils
+coreutils-env	9.11-r0	GPL-3.0-or-later	https://www.gnu.org/software/coreutils/	coreutils
+coreutils-fmt	9.11-r0	GPL-3.0-or-later	https://www.gnu.org/software/coreutils/	coreutils
+coreutils-sha512sum	9.11-r0	GPL-3.0-or-later	https://www.gnu.org/software/coreutils/	coreutils
+gdbm	1.26-r0	GPL-3.0-or-later	https://www.gnu.org/software/gdbm/	gdbm
+git	2.54.1-r0	GPL-2.0-only	https://www.git-scm.com/	git
+git-init-template	2.54.1-r0	GPL-2.0-only	https://www.git-scm.com/	git
+libattr	2.5.2-r2	LGPL-2.1-or-later	https://savannah.nongnu.org/projects/attr	attr
+libbz2	1.0.8-r6	bzip2-1.0.6	https://sourceware.org/bzip2/	bzip2
+libcrypto3	3.5.9-r0	Apache-2.0	https://www.openssl.org/	openssl
+libcurl	8.23.0-r0	curl	https://curl.se/	curl
+libexpat	2.10.0-r0	MIT	https://libexpat.github.io/	expat
+libffi	3.5.2-r1	MIT	https://sourceware.org/libffi/	libffi
+libgcc	15.2.0-r5	GPL-2.0-or-later AND LGPL-2.1-or-later	https://gcc.gnu.org	gcc
+libidn2	2.3.8-r0	GPL-2.0-or-later OR LGPL-3.0-or-later	https://www.gnu.org/software/libidn#libidn2	libidn2
+libncursesw	6.6_p20260516-r0	X11	https://invisible-island.net/ncurses/	ncurses
+libpanelw	6.6_p20260516-r0	X11	https://invisible-island.net/ncurses/	ncurses
+libpsl	0.21.5-r3	MIT	https://rockdaboot.github.io/libpsl	libpsl
+libssl3	3.5.9-r0	Apache-2.0	https://www.openssl.org/	openssl
+libstdc++	15.2.0-r5	GPL-2.0-or-later AND LGPL-2.1-or-later	https://gcc.gnu.org	gcc
+libunistring	1.4.2-r0	GPL-2.0-or-later OR LGPL-3.0-or-later	https://www.gnu.org/software/libunistring/	libunistring
+mpdecimal	4.0.1-r0	BSD-2-Clause	https://www.bytereef.org/mpdecimal/index.html	mpdecimal
+musl	1.2.6-r3	MIT	https://musl.libc.org/	musl
+musl-utils	1.2.6-r3	MIT AND BSD-2-Clause AND GPL-2.0-or-later	https://musl.libc.org/	musl
+nano	9.3-r0	GPL-3.0-or-later	https://www.nano-editor.org/	nano
+ncurses-terminfo-base	6.6_p20260516-r0	X11	https://invisible-island.net/ncurses/	ncurses
+nghttp2-libs	1.70.0-r0	MIT	https://nghttp2.org	nghttp2
+pcre2	10.49-r0	BSD-3-Clause	https://pcre.org/	pcre2
+pyc	3.14.10-r1	PSF-2.0	https://www.python.org/	python3
+python3	3.14.10-r1	PSF-2.0	https://www.python.org/	python3
+python3-pyc	3.14.10-r1	PSF-2.0	https://www.python.org/	python3
+python3-pycache-pyc0	3.14.10-r1	PSF-2.0	https://www.python.org/	python3
+readline	8.3.3-r1	GPL-3.0-or-later	https://tiswww.cwru.edu/php/chet/readline/rltop.html	readline
+scanelf	1.3.9-r1	GPL-2.0-only	https://wiki.gentoo.org/wiki/Hardened/PaX_Utilities	pax-utils
+skalibs-libs	2.15.0.0-r0	ISC	https://skarnet.org/software/skalibs/	skalibs
+sqlite-libs	3.53.4-r0	blessing	https://www.sqlite.org/	sqlite
+ssl_client	1.37.0-r31	GPL-2.0-only	https://busybox.net/	busybox
+utmps-libs	0.1.3.3-r0	ISC	https://skarnet.org/software/utmps/	utmps
+xz-libs	5.8.4-r0	GPL-2.0-or-later AND 0BSD AND Public-Domain AND LGPL-2.1-or-later	https://tukaani.org/xz/	xz
+zlib	1.3.2-r1	Zlib	https://zlib.net/	zlib
+zstd-libs	1.5.7-r2	BSD-3-Clause OR GPL-2.0-or-later	https://facebook.github.io/zstd/	zstd
+linux-virt	6.18.64-r0	GPL-2.0-only	https://www.kernel.org/	linux-lts

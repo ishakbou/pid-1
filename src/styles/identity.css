@@ -1,0 +1,127 @@
+/* PID 1, identity layer.
+   Three things, on top of site.css:
+   1. Each part of the course has its own colour. Everything inside a part uses it as the accent.
+   2. Each module has its own icon, shown in a tile (.mico).
+   3. The course is drawn as a path: a map of 18 tiles on the first screen, and a line through the syllabus. */
+
+/* ---------- 1. Colour ---------- */
+:root[data-theme="dark"] {
+  /* a little lighter than before, with clearer steps between the surfaces */
+  --bg: #101315; --s1: #171B1E; --s2: #1E2327; --s3: #282E33;
+  --line: #2A3135; --line-2: #3F484D;
+  --text: #EEF1F2; --text-2: #B9C1C4; --text-3: #8F9A9D;
+  --p1: #33BDB0; --p1-text: #4CCDC0; --p1-soft: #11322F; --p1-ink: #04201D;
+  --p2: #EF6F8B; --p2-text: #F58FA5; --p2-soft: #3A1B24; --p2-ink: #2B0710;
+  --p3: #6CB2EE; --p3-text: #8DC5F4; --p3-soft: #152C40; --p3-ink: #06192B;
+}
+:root[data-theme="light"] {
+  --p1: #0B7A70; --p1-text: #0A6F66; --p1-soft: #DDF1EE; --p1-ink: #FFFFFF;
+  --p2: #BE2C52; --p2-text: #AE2248; --p2-soft: #FBE3EA; --p2-ink: #FFFFFF;
+  --p3: #1D6CB0; --p3-text: #1A62A1; --p3-soft: #E0EDF9; --p3-ink: #FFFFFF;
+}
+[data-part="1"] { --accent: var(--p1); --accent-text: var(--p1-text); --accent-soft: var(--p1-soft); --accent-ink: var(--p1-ink); }
+[data-part="2"] { --accent: var(--p2); --accent-text: var(--p2-text); --accent-soft: var(--p2-soft); --accent-ink: var(--p2-ink); }
+[data-part="3"] { --accent: var(--p3); --accent-text: var(--p3-text); --accent-soft: var(--p3-soft); --accent-ink: var(--p3-ink); }
+
+/* ---------- 2. Module tile ---------- */
+.mico {
+  position: relative; flex: none; display: inline-grid; place-items: center;
+  width: 36px; height: 36px; border-radius: 9px;
+  background: var(--accent-soft); color: var(--accent-text);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+.mico .mi { display: block; }
+.mico.solid { background: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow-sm); }
+.mico.sm { width: 26px; height: 26px; border-radius: 7px; }
+.mico.lg { width: 60px; height: 60px; border-radius: 14px; }
+/* a completed module gets a small check on its tile */
+[data-mstate="done"] .mico::after {
+  content: ""; position: absolute; right: -5px; top: -5px; width: 15px; height: 15px; border-radius: 50%;
+  background: var(--done) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8.5 7 11.5 12 5'/%3E%3C/svg%3E") center / 11px no-repeat;
+  box-shadow: 0 0 0 2px var(--s1);
+}
+
+/* ---------- 3a. The course map on the first screen ---------- */
+.cmap { grid-column: 1 / -1; display: flex; gap: 1.5rem; margin-top: 0.25rem; padding-top: 1.4rem; border-top: 1px solid var(--line); }
+.cmap-part { flex: var(--n) 1 0; min-width: 0; }
+.cmap-h { margin-bottom: 0.7rem; font-size: 13px; font-weight: 700; color: var(--accent-text); white-space: nowrap; }
+.cmap-h span { margin-right: 0.45rem; font-weight: 500; color: var(--text-3); }
+.cmap-list { position: relative; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); }
+.cmap-list::before { content: ""; position: absolute; left: 0; right: 0; top: 20px; height: 2px; border-radius: 1px; background: var(--accent-soft); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent); }
+.cmap-m { position: relative; display: inline-grid; justify-items: center; gap: 0.35rem; text-decoration: none; color: var(--text-3); border-radius: 11px; }
+.cmap-m .mico { width: 42px; height: 42px; border-radius: 11px; transition: transform 0.15s ease; }
+.cmap-m:hover .mico, .cmap-m:focus-visible .mico { transform: translateY(-3px); }
+.cmap-m:hover { color: var(--text); }
+.cmap-n { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cmap-m[data-mstate="now"] .mico { outline: 2px solid var(--accent); outline-offset: 3px; }
+.cmap-m[data-mstate="now"] .cmap-n, .cmap-m[data-mstate="done"] .cmap-n { color: var(--text); }
+/* the name of the module under the pointer */
+.cmap-tip { position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); padding: 4px 9px; border-radius: 6px; background: var(--text); color: var(--bg); font-size: 12.5px; font-weight: 600; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.12s ease; z-index: 3; }
+.cmap-m:hover .cmap-tip, .cmap-m:focus-visible .cmap-tip { opacity: 1; }
+.cmap-list li:nth-child(-n+2) .cmap-tip { left: 0; transform: none; }
+.cmap-part:last-child .cmap-list li:nth-last-child(-n+2) .cmap-tip { left: auto; right: 0; transform: none; }
+
+/* ---------- 3b. Progress panel and part heads take the part colours ---------- */
+.overview, .syl, .rt-wrap, .stages { box-shadow: var(--shadow-sm); }
+.track-name span { color: var(--accent-text); font-weight: 600; }
+.part-head h3 { display: flex; align-items: center; }
+.part-n { background: var(--accent-soft); color: var(--accent-text); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent); }
+.part .syl { border-top: 3px solid var(--accent); }
+
+/* ---------- 3c. Syllabus: a tile on every row, joined by a line ---------- */
+.syl-head, .syl-row { grid-template-columns: 7.4rem minmax(0, 1fr) 5.6rem 8.6rem 10.5rem 6.6rem 1rem; }
+.c-num { display: inline-flex; align-items: center; gap: 0.6rem; white-space: nowrap; }
+.syl-item { position: relative; }
+.syl-item::before { content: ""; position: absolute; left: calc(1.1rem + 17px); top: 0; bottom: 0; width: 2px; background: var(--accent-soft); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent); pointer-events: none; }
+.syl-item:first-child::before { top: 30px; }
+.syl-item:last-child::before { bottom: auto; height: 30px; }
+.syl-item:only-child::before { display: none; }
+.syl-row .mico, .mod .mico { z-index: 1; background: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow-sm); }
+.syl-item::before { background: color-mix(in srgb, var(--accent) 42%, var(--s1)); box-shadow: none; }
+.syl-row:hover .syl-t, .syl-row[aria-expanded="true"] .syl-t { color: var(--accent-text); }
+.syl-panel { padding-left: calc(1.1rem + 36px + 0.6rem); }
+
+/* Board cards */
+.mod-top { justify-content: flex-start; gap: 0.6rem; margin-bottom: 0.35rem; }
+.mod-top .state { margin-left: auto; }
+.mod:hover { border-color: var(--accent); }
+
+/* ---------- Module pages and lessons ---------- */
+.lnum { display: flex; align-items: center; flex-wrap: wrap; gap: 0 0.1rem; }
+.lnum .mico { margin-right: 0.6rem; }
+.lhead > .mico.lg { margin-bottom: 1rem; }
+.lhead .mico { background: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow-sm); }
+/* The head of a module overview is a tinted panel in the colour of its part */
+.kind-overview .lhead {
+  padding: clamp(1.25rem, 3vw, 2rem); border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--accent) 9%, var(--s1));
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  box-shadow: var(--shadow-sm);
+}
+.kind-overview .lhead .chips li { background: var(--bg); }
+.cnav-part-h span { color: var(--accent-text); }
+.cnav-mod[open] > summary .cnav-n, .cnav-mod summary:hover .cnav-n { color: var(--accent-text); }
+
+/* ---------- Narrower screens ---------- */
+@media (max-width: 1280px) {
+  .syl-head, .syl-row { grid-template-columns: 7.4rem minmax(0, 1fr) 5.4rem 8.4rem 8.5rem 6.4rem 1rem; }
+}
+@media (max-width: 1100px) {
+  .syl-row { grid-template-columns: minmax(0, 1fr) auto 1rem; }
+  /* rows are stacked here, so the line would cross the text */
+  .syl-item::before { display: none; }
+}
+@media (max-width: 900px) {
+  .cmap { flex-direction: column; gap: 1.1rem; }
+  .cmap-list { grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); row-gap: 0.7rem; }
+  .cmap-list::before { display: none; }
+  .cmap-tip { display: none; }
+  .syl-panel { padding-left: 1.1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cmap-m .mico, .cmap-tip { transition: none; }
+  .cmap-m:hover .mico { transform: none; }
+}
+@media print {
+  .mico { box-shadow: none; }
+}

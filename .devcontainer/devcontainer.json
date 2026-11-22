@@ -1,0 +1,22 @@
+// The PID 1 lab: a full Ubuntu in GitHub Codespaces with the tools the course uses.
+// Open it from the README ("Open the lab in Codespaces"). The user is "vscode", not "sam":
+// your prompt and your home folder look a little different from the lessons.
+{
+  "name": "PID 1 lab (Ubuntu 24.04)",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "lts" }
+  },
+  "postCreateCommand": "sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git python3 python3-pip python3-venv sqlite3 curl wget bind9-dnsutils traceroute iputils-ping iproute2 net-tools netcat-openbsd nano vim less tree file man-db openssh-client openssl jq whois nmap tcpdump ufw build-essential zip unzip",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  "hostRequirements": {
+    "cpus": 2
+  }
+}
