@@ -4,7 +4,9 @@
   "description": "PID 1: a free course on the practical basics of computer science and cybersecurity.",
   "type": "module",
   "private": true,
-  "license": "MIT",
+  "author": "Ishak Boukhalfa",
+  "license": "MIT AND CC-BY-NC-SA-4.0",
+  "homepage": "https://ishakbou.github.io/pid-1/",
   "engines": {
     "node": ">=22.23.4"
   },

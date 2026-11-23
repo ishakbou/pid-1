@@ -5,7 +5,8 @@ import { site, href, sitePages } from '../lib/course.mjs';
 <footer class="foot">
   <div class="foot-main">
     <p>Created by <strong>{site.author}</strong>. <a href={site.telegramUrl} rel="me">Telegram @{site.telegram}</a><span class="dot" aria-hidden="true"></span><a href={site.linkedin} rel="me">LinkedIn</a></p>
-    <p>Lessons are licensed CC BY-NC-SA 4.0. Code is licensed MIT. <a href={href('license')}>Read the license</a></p>
+    <p>&copy; 2026 {site.author}. Lessons are licensed CC BY-NC-SA 4.0. Code is licensed MIT. <a href={href('license')}>Read the license</a></p>
+    <p class="print-credit">From {site.course}: {site.tagline}, by {site.author}. {site.url} You may share this page with this credit. You may not sell it.</p>
   </div>
   <nav class="foot-links" aria-label="Site links">
     {sitePages.map((s) => <a href={href(s.path)}>{s.title}</a>)}

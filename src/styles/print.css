@@ -1,6 +1,10 @@
 /* Printing. Made for the cheat sheets, and correct for every page: no navigation, no terminal,
    black text on white paper. */
+/* The credit with the address of the course: only on paper, where links cannot be clicked */
+.print-credit { display: none; }
+
 @media print {
+  .print-credit { display: block; margin-top: 3pt; color: #000; }
   :root, :root[data-theme="dark"], :root[data-theme="light"] {
     color-scheme: light;
     --bg: #fff; --s1: #fff; --s2: #fff; --s3: #f2f2f2;
