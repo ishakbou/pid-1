@@ -2,6 +2,7 @@
 // Home, design "Boot": the course starts like a Linux system. Everything is built from the curriculum data.
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import TermWindow from '../components/TermWindow.astro';
+import CertTiles from '../components/CertTiles.astro';
 import { course, site, STAGES, plural, about, href } from '../lib/course.mjs';
 import { IC } from '../lib/icons.mjs';
 import { moduleIcon } from '../lib/module-icons.mjs';
@@ -27,7 +28,7 @@ const modLink = (m) => (m.hasOverview ? { href: m.href } : { href: `#m${m.n}`, '
       <p class="tagline">{site.tagline}</p>
       <p class="sentence">{site.nameNote} {site.sentence}</p>
       <div class="cta">
-        <a class="btn primary" id="continue" href={first ? first.href : '#m0'} data-first-href={first ? first.href : ''} data-first-label={firstLabel} data-cert-href={href('certificate')}>
+        <a class="btn primary" id="continue" href={first ? first.href : '#m0'} data-first-href={first ? first.href : ''} data-first-label={firstLabel} data-cert-href={`${href('certificate')}#course`}>
           <span class="btn-kicker">Start with</span><span class="btn-main">{firstLabel}</span><Fragment set:html={IC.right} />
         </a>
         <a class="btn" id="start0" href="#m0" data-jump="0" hidden>Start with Module 0</a>
@@ -85,7 +86,11 @@ const modLink = (m) => (m.hasOverview ? { href: m.href } : { href: `#m${m.n}`, '
         ))}
       </div>
     </div>
-    <p class="sec-note">When every lesson is marked as done, you get a <a href={href('certificate')}>certificate with your name on it</a>.</p>
+    <div class="certs-home" id="certificates">
+      <h3>Your certificates</h3>
+      <p>You get a certificate for each part you finish, and one more for the whole course. Each one has your name on it.</p>
+      <CertTiles />
+    </div>
     <noscript><p class="sec-note">Progress tracking needs JavaScript. The lessons work without it.</p></noscript>
   </section>
 
@@ -176,6 +181,11 @@ const modLink = (m) => (m.hasOverview ? { href: m.href } : { href: `#m${m.n}`, '
                 );
               })}
             </ul>
+            <a class="part-cert" href={`${href('certificate')}#part-${p.n}`} data-cert={`p${p.n}`} data-cstate="locked">
+              <span><b>Part {p.n} certificate.</b> Finish these {plural(p.modules.length, 'module')} and get a certificate for Part {p.n}: {p.title}.</span>
+              <span data-cert-count>0 of {plural(nLessons(p), 'lesson')}</span>
+              <span class="ctile-s" data-cert-state>Locked</span>
+            </a>
           </div>
         </section>
       ))}

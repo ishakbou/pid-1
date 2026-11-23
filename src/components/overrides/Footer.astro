@@ -19,6 +19,7 @@ const label = (o) => (o.kind === 'lesson' ? `${o.label} ${o.title}` : o.kind ===
       <p>Your progress is saved in this browser only. No account, and nothing is sent anywhere.</p>
     </div>
     <button type="button" class="btn primary" id="complete" aria-pressed="false"><span class="c-check" set:html={IC.check} /><span class="c-label">Mark as complete</span></button>
+    <p class="complete-cert" id="complete-cert" aria-live="polite" hidden><span></span> <a href="#"></a></p>
   </section>
 )}
 

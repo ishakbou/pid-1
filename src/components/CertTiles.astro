@@ -1,0 +1,29 @@
+---
+// The four certificates as tiles: three part certificates and the course certificate.
+// site.js fills the numbers and the state (data-cstate) from the reader's progress.
+import { certList } from '../lib/certs.mjs';
+const list = certList();
+---
+<ul class="ctiles">
+  {list.map((k) => (
+    <li>
+      <a class="ctile" href={k.href} data-cert={k.id} data-part={k.part ?? undefined} data-cstate="locked">
+        <span class="ctile-top">
+          <svg class="ctile-sheet" viewBox="0 0 64 46" aria-hidden="true">
+            <rect x="1" y="1" width="62" height="44" rx="2" fill="#FFFFFF" />
+            <rect x="4.5" y="4.5" width="55" height="37" fill="none" stroke={k.color} stroke-width="2" />
+            <rect x="21" y="11" width="22" height="2.4" fill="#171B26" />
+            <rect x="14" y="18.5" width="36" height="3.6" fill="#171B26" />
+            <rect x="19" y="26" width="26" height="1.6" fill="#9AA3B2" />
+            <circle cx="32" cy="34" r="4" fill="none" stroke={k.color} stroke-width="1.6" />
+          </svg>
+          <span class="ctile-s" data-cert-state>Locked</span>
+        </span>
+        <span class="ctile-k">{k.kicker}</span>
+        <span class="ctile-t">{k.title}</span>
+        <span class="ctile-m">{k.meta}</span>
+        <span class="ctile-p"><span class="bar" aria-hidden="true"><i></i></span><span data-cert-count>0 of {k.lessons} lessons</span></span>
+      </a>
+    </li>
+  ))}
+</ul>

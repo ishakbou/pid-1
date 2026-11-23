@@ -1,6 +1,6 @@
 // Lesson page: the docked practice terminal, Run on commands, the section navigator
 // and "Mark as complete".
-import { courseData, progress, setDone, readPref, writePref } from './progress.js';
+import { courseData, progress, certs, setDone, readPref, writePref } from './progress.js';
 import { renderProgress, scrollSpy, keepVisible } from './site.js';
 import { createTerminal } from './terminal/index.js';
 
@@ -18,6 +18,20 @@ function renderLesson() {
   $('.c-label', btn).textContent = mine ? 'Completed' : 'Mark as complete';
   box.classList.toggle('is-done', mine);
   $('#complete-h').textContent = mine ? 'Lesson completed' : 'Finished this lesson?';
+  // When this lesson is done and its part (or the whole course) is finished: the way to the certificate
+  const note = $('#complete-cert');
+  if (!note) return;
+  const list = certs();
+  const mod = data.modules.find((m) => m.n === data.module);
+  const whole = list.find((k) => k.id === 'course'), part = mod && list.find((k) => k.part === mod.part);
+  const hit = !mine ? null : whole && whole.open ? whole : part && part.open ? part : null;
+  note.hidden = !hit;
+  if (!hit) return;
+  const title = ((data.parts || []).find((x) => x.n === hit.part) || {}).title;
+  $('span', note).textContent = hit.part ? 'You finished Part ' + hit.part + ': ' + title + '.' : 'You finished the whole course.';
+  const a = $('a', note);
+  a.textContent = hit.part ? 'Get your Part ' + hit.part + ' certificate' : 'Get your course certificate';
+  a.setAttribute('href', (data.cert || '') + '#' + (hit.part ? 'part-' + hit.part : 'course'));
 }
 if (btn) {
   btn.addEventListener('click', () => {

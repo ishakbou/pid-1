@@ -1,100 +1,143 @@
 ---
-// Certificate: opens when every lesson is marked as done. The reader types a name, and the page
-// prints as two A4 landscape sheets: the certificate, and a course record with every module.
-// Everything happens in the browser: progress, name and date stay on the device.
+// Certificates. There are four: one for each part of the course, and one for the whole course.
+// A certificate opens when every lesson of its part (or of the course) is marked as done.
+// The reader types a name, and the page prints on A4 landscape: one sheet for a part certificate,
+// two sheets for the course certificate (the certificate and a course record with every module).
+// Everything happens in the browser: progress, name and dates stay on the device.
+import '@fontsource-variable/eb-garamond';
+import '@fontsource-variable/eb-garamond/wght-italic.css';
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import CertTiles from '../components/CertTiles.astro';
 import { course, site, href, plural, about } from '../lib/course.mjs';
+import { certList, PAPER } from '../lib/certs.mjs';
 
 const c = course();
+const list = certList();
 const two = (n) => String(n).padStart(2, '0');
 const short = (t) => t.replace(/^about /, '');
-const description = `Finish every lesson of ${site.course} and get a certificate with your name on it.`;
+const description = `${site.course} gives four certificates with your name: one for each part you finish, and one for the whole course.`;
 const address = site.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 const courseName = `${site.course}: ${site.tagline}`;
 const nLessons = (p) => p.modules.reduce((a, m) => a + m.lessons.length, 0);
-const INK = '#131822';
+const INK = '#171B26';
+const ROMAN = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V' };
+// The band of the frame: a fine lattice, drawn as a small SVG tile and repeated around the sheet
+const frame = (color) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36'><defs><pattern id='p' width='12' height='12' patternUnits='userSpaceOnUse'><path d='M0 6L6 0L12 6L6 12Z' fill='none' stroke='${color}' stroke-width='1'/><circle cx='6' cy='6' r='1.15' fill='${color}'/></pattern></defs><rect width='36' height='36' fill='url(#p)'/></svg>`)}")`;
+const small = (what) => `${address}. ${site.course} is a free, self-paced online course. This ${what} is issued from the learner's own record of completed lessons and is not an accredited qualification.`;
+// What the script of the page needs to know about each certificate
+const info = list.map((k) => ({ id: k.id, hash: k.hash, part: k.part, title: k.title, label: k.label, lessons: k.lessons }));
 ---
 
-<StarlightPage frontmatter={{ title: 'Certificate', description }}>
+<StarlightPage frontmatter={{ title: 'Certificates', description }}>
   <div class="prose page-prose cert-page">
-    <noscript><p>The certificate needs JavaScript, because your progress is saved in your browser.</p></noscript>
+    <p class="no-print">Choose a certificate to see it. A locked one shows a sample.</p>
+    <noscript><p>The certificates need JavaScript, because your progress is saved in your browser.</p></noscript>
 
-    <section id="cert-locked" class="no-print" hidden>
-      <h2 id="not-yet">Not yet</h2>
-      <p><strong><span data-cert-done>0</span> of {c.counts.lessons} lessons</strong> are marked as done. The certificate opens when all of them are.</p>
-      <span class="bar big cert-bar" aria-hidden="true"><i data-overall-bar></i></span>
-      <h3>Still to finish</h3>
-      <ul class="cert-left">
-        {c.modules.map((m) => (
-          <li data-module={m.n}><a href={m.hasOverview ? m.href : `${href('')}#m${m.n}`}>Module {m.n}: {m.title}</a><span data-count-long></span></li>
-        ))}
-      </ul>
-      <p><button type="button" class="btn small" id="cert-sample" aria-pressed="false">Show a sample</button></p>
-    </section>
+    <nav class="no-print cert-pick" aria-label="Choose a certificate"><CertTiles /></nav>
 
-    <section id="cert-open" class="no-print" hidden>
-      <h2 id="done">You finished the course</h2>
-      <p>All {c.counts.lessons} lessons are done. That was a lot of work, and you did it. Type your full name the way you want it on the certificate.</p>
-      <form class="cert-form" id="cert-form">
-        <label for="cert-name">Your full name</label>
-        <div class="cert-row">
-          <input id="cert-name" name="name" type="text" maxlength="60" autocomplete="name" spellcheck="false" required />
-          <button type="submit" class="btn primary">Update the certificate</button>
-          <button type="button" class="btn" id="cert-print" disabled>Print or save as PDF</button>
-        </div>
-      </form>
-      <p class="cert-note">Your name stays in this browser. It is not sent anywhere. To get a PDF, choose "Save as PDF" as the printer. The paper is A4, landscape, and the result has two pages: the certificate and your course record.</p>
-    </section>
-
-    <div class="cert-wrap" id="cert-wrap" hidden>
-      <article class="cert" id="cert" aria-label="Certificate of completion">
-        <div class="cert-in">
-          <p class="cert-brand"><span aria-hidden="true">1</span>{site.course}</p>
-          <p class="cert-tri" aria-hidden="true"><i></i><i></i><i></i></p>
-          <p class="cert-kind">Certificate of Completion</p>
-          <p class="cert-pre">This is to certify that</p>
-          <p class="cert-name" data-cert-name>Your name</p>
-          <p class="cert-text">has successfully completed every lesson of the course</p>
-          <p class="cert-course">{courseName}</p>
-          <p class="cert-desc">{c.counts.lessons} lessons in {plural(c.counts.modules, 'module')} of hands-on practice: Linux and the terminal, Git, Python, data structures, how computers and networks work, databases, the web, cryptography, system and web security, and incident response. The learner also built and secured the mylab project, from the first terminal command to a finished release.</p>
-          <p class="cert-thanks">Awarded with appreciation for the work behind it: every command typed, every exercise done, every mistake fixed.</p>
-          <div class="cert-sign">
-            <div>
-              <p class="cert-v" data-cert-date></p>
-              <p class="cert-k">Date of completion</p>
-            </div>
-            <svg class="cert-seal" viewBox="0 0 200 200" role="img" aria-label={`Seal of ${site.course}: course completed`}>
-              <defs><path id="cert-ring" d="M26 100a74 74 0 1 1 148 0a74 74 0 1 1 -148 0" /></defs>
-              <circle cx="100" cy="100" r="96" fill="none" stroke={INK} stroke-width="2.6" />
-              <circle cx="100" cy="100" r="90.5" fill="none" stroke={INK} stroke-width="0.8" />
-              <circle cx="100" cy="100" r="59" fill="none" stroke={INK} stroke-width="0.8" />
-              <text class="cert-ring" fill={INK}><textPath href="#cert-ring" textLength="456" lengthAdjust="spacing">{site.course.toUpperCase()} • CS &amp; SECURITY FOUNDATIONS • COURSE COMPLETED •</textPath></text>
-              <rect x="79" y="60" width="42" height="42" rx="9.5" fill={INK} />
-              <text class="cert-seal-1" x="100" y="91.5" text-anchor="middle" fill="#FFFFFF">1</text>
-              <text class="cert-seal-w" x="100" y="123" text-anchor="middle" fill={INK}>COMPLETED</text>
-              <rect x="74" y="131" width="16" height="3.2" fill="#0B7A70" /><rect x="92" y="131" width="16" height="3.2" fill="#BE2C52" /><rect x="110" y="131" width="16" height="3.2" fill="#1D6CB0" />
-            </svg>
-            <div>
-              <p class="cert-v cert-sig">{site.author}</p>
-              <p class="cert-k">Author and instructor, {site.course}</p>
-            </div>
+    <section class="no-print cert-status" aria-live="polite">
+      <h2 id="cert-h">Certificate</h2>
+      <div id="cert-locked" hidden>
+        <p><strong><span data-cs-done>0</span> of <span data-cs-total>0</span> lessons</strong> <span data-cs-scope></span> are marked as done. This certificate opens when all of them are. Until then, the sheet below is a sample.</p>
+        <h3>Still to finish</h3>
+        <ul class="cert-left">
+          {c.modules.map((m) => (
+            <li data-module={m.n} data-in-part={m.part}><a href={m.hasOverview ? m.href : `${href('')}#m${m.n}`}>Module {m.n}: {m.title}</a><span data-count-long></span></li>
+          ))}
+        </ul>
+      </div>
+      <div id="cert-open" hidden>
+        <p data-cs-congrats></p>
+        <form class="cert-form" id="cert-form">
+          <label for="cert-name">Your full name</label>
+          <div class="cert-row">
+            <input id="cert-name" name="name" type="text" maxlength="60" autocomplete="name" spellcheck="false" required />
+            <button type="submit" class="btn primary">Update the certificate</button>
+            <button type="button" class="btn" id="cert-print" disabled>Print or save as PDF</button>
           </div>
-          <p class="cert-small">{address}. {site.course} is a free, self-paced online course. This certificate is issued from the learner's own record of completed lessons and is not an accredited qualification.</p>
-        </div>
-        <p class="cert-stamp" aria-hidden="true">Sample</p>
-      </article>
+        </form>
+        <p class="cert-note">Your name stays in this browser. It is not sent anywhere. To get a PDF, choose "Save as PDF" as the printer. The paper is A4, landscape. <span data-cs-pages></span></p>
+      </div>
+    </section>
 
-      <article class="cert cert-record" aria-label="Course record">
+    <div class="cert-wrap" id="cert-wrap" data-sample>
+      {list.map((k) => (
+        <article class="cert" data-sheet={k.id} style={`--ac:${k.color};--frame:${frame(k.color)}`} aria-label={k.part ? `Certificate of completion for Part ${k.part}: ${k.title}` : 'Certificate of completion for the whole course'} hidden>
+          <span class="cert-frame" aria-hidden="true"></span>
+          <div class="cert-in">
+            <p class="cert-brand"><span aria-hidden="true">1</span>{site.course}</p>
+            <p class="cert-kind">Certificate of Completion</p>
+            <p class="cert-scope">{k.part ? `Part ${k.part} of ${c.parts.length}` : 'Full course'}</p>
+            <p class="cert-pre">This is to certify that</p>
+            <p class="cert-name" data-cert-name>Your Name</p>
+            {k.part ? (
+              <Fragment>
+                <p class="cert-text">has completed every lesson of Part {k.part} of the course {courseName}</p>
+                <p class="cert-course is-part">Part {k.part}: {k.title}</p>
+                <ol class="cert-mods">
+                  {k.modules.map((m) => <li><span>{two(m.n)}</span>{m.title}</li>)}
+                </ol>
+                <p class="cert-thanks">{plural(k.modules.length, 'module')}, {plural(k.lessons, 'lesson')}, {about(k.lessons)} of guided practice. Awarded with appreciation for the work behind it.</p>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <p class="cert-text">has completed every lesson of the course</p>
+                <p class="cert-course">{courseName}</p>
+                <ul class="cert-parts">
+                  {c.parts.map((p) => <li style={`--pc:${PAPER[p.n]}`}><b>Part {p.n}: {p.title}</b><span>{plural(p.modules.length, 'module')}, {plural(nLessons(p), 'lesson')}</span></li>)}
+                </ul>
+                <p class="cert-thanks">{plural(c.counts.lessons, 'lesson')} in {plural(c.counts.modules, 'module')}, {about(c.counts.lessons)} of guided practice. Awarded with appreciation for the work behind it: every command typed, every exercise done, every mistake fixed.</p>
+              </Fragment>
+            )}
+            <div class="cert-sign">
+              <div>
+                <p class="cert-v" data-cert-date></p>
+                <p class="cert-k">Date of completion</p>
+              </div>
+              <svg class="cert-seal" viewBox="0 0 200 200" role="img" aria-label={k.part ? `Seal of ${site.course}: Part ${k.part} completed` : `Seal of ${site.course}: course completed`}>
+                <defs><path id={`cert-ring-${k.id}`} d="M26 100a74 74 0 1 1 148 0a74 74 0 1 1 -148 0" /></defs>
+                <circle cx="100" cy="100" r="96" fill="none" stroke={k.color} stroke-width="2.6" />
+                <circle cx="100" cy="100" r="90.5" fill="none" stroke={k.color} stroke-width="0.8" />
+                <circle cx="100" cy="100" r="59" fill="none" stroke={k.color} stroke-width="0.8" />
+                <text class="cert-ring" fill={INK}><textPath href={`#cert-ring-${k.id}`} textLength="456" lengthAdjust="spacing">{site.course.toUpperCase()} • CS &amp; SECURITY FOUNDATIONS • {k.part ? `PART ${k.part} COMPLETED` : 'COURSE COMPLETED'} •</textPath></text>
+                {k.part ? (
+                  <Fragment>
+                    <text class="cert-seal-w" x="100" y="76" text-anchor="middle" fill={INK}>PART</text>
+                    <text class="cert-seal-n" x="100" y="121" text-anchor="middle" fill={k.color}>{ROMAN[k.part] || k.part}</text>
+                    <rect x="82" y="131" width="36" height="2.4" fill={k.color} />
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    <rect x="79" y="60" width="42" height="42" rx="9.5" fill={INK} />
+                    <text class="cert-seal-1" x="100" y="91.5" text-anchor="middle" fill="#FFFFFF">1</text>
+                    <text class="cert-seal-w" x="100" y="123" text-anchor="middle" fill={INK}>COMPLETED</text>
+                    <rect x="74" y="131" width="16" height="3.2" fill={PAPER[1]} /><rect x="92" y="131" width="16" height="3.2" fill={PAPER[2]} /><rect x="110" y="131" width="16" height="3.2" fill={PAPER[3]} />
+                  </Fragment>
+                )}
+              </svg>
+              <div>
+                <p class="cert-v cert-sig">{site.author}</p>
+                <p class="cert-k">Author of {site.course}</p>
+              </div>
+            </div>
+            <p class="cert-small">{small('certificate')}{k.part ? ` It covers Part ${k.part} only.` : ''}</p>
+          </div>
+          <p class="cert-stamp" aria-hidden="true">Sample</p>
+        </article>
+      ))}
+
+      <article class="cert cert-record" data-sheet="course" style={`--ac:${PAPER.course};--frame:${frame(PAPER.course)}`} aria-label="Course record" hidden>
+        <span class="cert-frame" aria-hidden="true"></span>
         <div class="cert-in">
           <header class="rec-top">
             <p class="cert-brand"><span aria-hidden="true">1</span>{site.course}</p>
-            <p class="rec-kind">Course record</p>
+            <p class="rec-kind">Course Record</p>
           </header>
-          <p class="rec-name" data-cert-name>Your name</p>
+          <p class="rec-name" data-cert-name>Your Name</p>
           <p class="rec-line">completed all {c.counts.lessons} lessons of {courseName} on <span data-cert-date></span>.</p>
           <div class="rec-parts">
             {c.parts.map((p) => (
-              <section data-part={p.n}>
+              <section style={`--pc:${PAPER[p.n]}`}>
                 <h3><span>Part {p.n}: {p.title}</span><span class="rec-lh">Lessons</span></h3>
                 <ol>
                   {p.modules.map((m) => (
@@ -106,27 +149,33 @@ const INK = '#131822';
             ))}
           </div>
           <p class="rec-total">Total: {plural(c.counts.modules, 'module')}, {plural(c.counts.lessons, 'lesson')}, {about(c.counts.lessons)} of guided practice. Every module ends with a project step in the learner's mylab repository.</p>
-          <p class="cert-small">{address}. {site.course} is a free, self-paced online course. This record is issued from the learner's own record of completed lessons and is not an accredited qualification.</p>
+          <p class="cert-small">{small('record')}</p>
         </div>
         <p class="cert-stamp" aria-hidden="true">Sample</p>
       </article>
     </div>
 
     <section class="no-print">
-      <h2 id="what">What this certificate is</h2>
-      <p>It says that you marked every lesson of {site.course} as done, and it thanks you for the work. The second page lists every module you completed. The site makes both pages in your browser from your own progress. Nobody checks it, so it is not an accredited qualification and it does not replace one.</p>
-      <p>What proves your skills is what you built: your <code>mylab</code> repository, your write-ups and your portfolio page. Show those first, and keep the certificate as a record that you finished.</p>
+      <h2 id="what">What these certificates are</h2>
+      <p>A part certificate says that you marked every lesson of that part as done. It covers that part only. The course certificate says that you finished all three parts, and it comes with a second page that lists every module. Each one thanks you for the work.</p>
+      <p>The site makes them in your browser from your own progress. Nobody checks it, so a certificate from {site.course} is not an accredited qualification and it does not replace one.</p>
+      <p>What proves your skills is what you built: your <code>mylab</code> repository, your write-ups and your portfolio page. Show those first, and keep the certificates as a record that you finished.</p>
       <p>Your progress is saved in this browser only. Open this page in the same browser where you marked the lessons as done.</p>
     </section>
+    <!-- In the page body on purpose: it comes after every style sheet, so it wins over the paper margins of print.css -->
+    <style is:inline>@media print { @page { size: A4 landscape; margin: 0; } }</style>
+    <script type="application/json" id="cert-info" set:html={JSON.stringify(info).replace(/</g, '\\u003c')} />
   </div>
 </StarlightPage>
 
 <style is:global>
-  .cert-bar { max-width: 28rem; margin-top: 0.8rem; }
+  .cert-pick { margin-top: 1rem; }
+  .cert-page .ctiles { padding: 0; }
+  .cert-status h2 { margin-top: 2rem; }
   .cert-left { margin-top: 0.6rem; padding: 0; list-style: none; }
   .cert-left li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.45rem 0; border-bottom: 1px solid var(--line); }
+  .cert-left li[hidden] { display: none; }
   .cert-left li span { color: var(--text-3); font-size: 14px; white-space: nowrap; }
-  .cert-left li[data-mstate="done"] { display: none; }
   .cert-form label { display: block; margin-top: 1rem; font-weight: 700; }
   .cert-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.4rem; }
   .cert-row input { flex: 1 1 16rem; min-height: 44px; padding: 0 0.8rem; border: 1px solid var(--line-2); border-radius: var(--r-sm); background: var(--s1); color: var(--text); font: inherit; }
@@ -134,120 +183,157 @@ const INK = '#131822';
   .cert-row .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .cert-note { font-size: 14px; color: var(--text-3); }
 
-  /* The sheets have their own colours: the same in dark mode, in light mode and on paper.
-     Every size is in em, and the em follows the width of the sheet, so screen and paper match. */
+  /* The sheets have their own colours and their own typeface (EB Garamond): the same in dark mode,
+     in light mode and on paper. Every size is in em, and the em follows the width of the sheet,
+     so the screen and the paper match. */
   .cert-wrap { container-type: inline-size; display: grid; gap: 1.5rem; margin: 1.75rem 0 0.5rem; }
   .cert {
-    --ink: #131822; --ink-2: #465168; --ink-3: #5C6880; --rule: #C9D1DC;
+    --ink: #171B26; --ink-2: #434C5F; --ink-3: #5F697C; --rule: #CBD2DC;
+    --cf: 'EB Garamond Variable', 'EB Garamond', Georgia, 'Times New Roman', serif;
     position: relative; aspect-ratio: 297 / 210; overflow: hidden;
-    font-size: 1.55cqw; line-height: 1.5; background: #FFFFFF; color: var(--ink);
-    font-family: var(--font); box-shadow: var(--shadow);
+    font-family: var(--cf); font-size: 1.62cqw; line-height: 1.45; font-weight: 400; font-variant-numeric: lining-nums;
+    background: #FFFFFF; color: var(--ink); box-shadow: var(--shadow);
     -webkit-print-color-adjust: exact; print-color-adjust: exact;
   }
-  /* A double frame, thin outside and strong inside, as on a formal document */
-  .cert::before { content: ""; position: absolute; inset: 1.7em; border: 0.07em solid var(--ink); pointer-events: none; }
-  .cert::after { content: ""; position: absolute; inset: 2.1em; border: 0.2em solid var(--ink); pointer-events: none; }
-  .cert-in { position: absolute; inset: 2.3em; display: flex; flex-direction: column; align-items: center; padding: 2em 3.5em 1.2em; text-align: center; }
-  .cert p, .cert ol, .cert h3 { margin: 0; padding: 0; }
-  .cert-brand { display: flex; align-items: center; gap: 0.42em; font-family: var(--display); font-size: 1.55em; line-height: 1.2; font-weight: 900; letter-spacing: -0.02em; }
-  .cert-brand span { display: grid; place-items: center; width: 1.3em; height: 1.3em; border-radius: 0.3em; background: var(--ink); color: #FFFFFF; font-family: var(--mono); font-size: 0.7em; font-weight: 700; }
-  .cert-tri { display: flex; gap: 0.3em; margin-top: 0.75em !important; }
-  .cert-tri i { width: 2.6em; height: 0.24em; background: #0B7A70; }
-  .cert-tri i:nth-child(2) { background: #BE2C52; }
-  .cert-tri i:nth-child(3) { background: #1D6CB0; }
-  .cert-kind { margin-top: 1.4em !important; font-family: var(--display); font-size: 1.02em; font-weight: 700; letter-spacing: 0.34em; text-transform: uppercase; text-indent: 0.34em; }
-  .cert-pre { margin-top: 1.3em !important; color: var(--ink-2); font-style: italic; }
-  .cert-name { min-width: 9em; max-width: 100%; margin-top: 0.1em !important; padding: 0 0.6em 0.1em; border-bottom: 0.03em solid var(--ink); font-family: var(--display); font-size: 4.4em; line-height: 1.16; font-weight: 700; letter-spacing: -0.025em; overflow-wrap: anywhere; }
-  .cert-text { margin-top: 0.85em !important; color: var(--ink-2); font-style: italic; }
-  .cert-course { margin-top: 0.1em !important; font-family: var(--display); font-size: 1.75em; line-height: 1.25; font-weight: 900; letter-spacing: -0.02em; }
-  .cert-desc { max-width: 54em; margin-top: 0.85em !important; font-size: 0.95em; line-height: 1.55; color: var(--ink-2); }
-  .cert-thanks { max-width: 58em; margin-top: 0.7em !important; font-size: 0.95em; line-height: 1.55; font-weight: 500; }
-  .cert-sign { display: grid; grid-template-columns: 1fr auto 1fr; gap: 3em; align-items: end; width: 100%; margin-top: auto; padding: 0.9em 2.5em 0; }
-  .cert-v { padding-bottom: 0.3em; border-bottom: 0.07em solid var(--ink); font-family: var(--display); font-size: 1.15em; font-weight: 700; min-height: 1.9em; }
-  .cert-sig { font-style: italic; font-weight: 500; font-size: 1.3em; letter-spacing: 0.01em; min-height: 1.7em; }
-  .cert-k { margin-top: 0.35em !important; font-size: 0.74em; color: var(--ink-3); }
-  .cert-seal { display: block; width: 7.8em; height: 7.8em; margin-bottom: -0.4em; }
-  .cert-ring { font-family: var(--display); font-size: 11.4px; font-weight: 700; }
+  .cert[hidden] { display: none; }
+  /* The frame: a thin rule, a band of fine lattice in the colour of the certificate, a strong rule */
+  .cert::before { content: ""; position: absolute; inset: 1.3em; border: 0.06em solid var(--ink); pointer-events: none; }
+  .cert-frame { position: absolute; inset: 1.62em; border: 0.95em solid transparent; border-image: var(--frame) 12 round; pointer-events: none; }
+  .cert::after { content: ""; position: absolute; inset: 2.83em; border: 0.13em solid var(--ink); pointer-events: none; }
+  .cert-in { position: absolute; inset: 3em; display: flex; flex-direction: column; align-items: center; padding: 1.15em 3em 0.75em; text-align: center; }
+  /* Two classes on purpose: these rules must win over the page text rules (.prose p), whatever the order of the style sheets */
+  .cert-wrap .cert p, .cert-wrap .cert h3 { margin: 0; }
+  .cert-wrap .cert ol, .cert-wrap .cert ul { margin: 0; padding: 0; }
+  .cert-wrap .cert li { margin: 0; list-style: none; }
+  .cert-brand { display: flex; align-items: center; gap: 0.42em; font-family: var(--display); font-size: 1.05em; line-height: 1.2; font-weight: 800; letter-spacing: -0.01em; }
+  .cert-brand span { display: grid; place-items: center; width: 1.45em; height: 1.45em; border-radius: 0.32em; background: var(--ink); color: #FFFFFF; font-family: var(--mono); font-size: 0.74em; font-weight: 700; }
+  .cert-kind { margin-top: 0.5em !important; font-size: 2.35em; line-height: 1.2; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; text-indent: 0.16em; }
+  .cert-scope { display: flex; align-items: center; gap: 0.9em; margin-top: 0.3em !important; color: var(--ac); font-size: 0.95em; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; text-indent: 0.3em; }
+  .cert-scope::before, .cert-scope::after { content: ""; width: 4.2em; height: 0.08em; background: var(--ac); }
+  .cert-pre { margin-top: 0.85em !important; color: var(--ink-2); font-size: 1.15em; font-style: italic; }
+  .cert-name { min-width: 9em; max-width: 100%; margin-top: 0.02em !important; padding: 0 0.5em 0.04em; border-bottom: 0.025em solid var(--ink); font-size: 4.1em; line-height: 1.15; font-weight: 500; letter-spacing: -0.005em; overflow-wrap: anywhere; }
+  .cert-text { max-width: 50em; margin-top: 0.75em !important; color: var(--ink-2); font-size: 1.15em; line-height: 1.35; font-style: italic; }
+  .cert-course { margin-top: 0.12em !important; font-size: 2em; line-height: 1.25; font-weight: 600; }
+  .cert-course.is-part { color: var(--ac); }
+  .cert-mods { display: grid; grid-template-columns: repeat(3, auto); justify-content: center; gap: 0.12em 2.6em; margin-top: 0.7em !important; list-style: none; font-size: 0.98em; line-height: 1.35; text-align: left; }
+  .cert-mods span { display: inline-block; width: 1.7em; color: var(--ac); font-weight: 600; }
+  .cert-parts { display: flex; justify-content: center; gap: 2.6em; margin-top: 0.85em !important; list-style: none; font-size: 0.98em; line-height: 1.3; text-align: left; }
+  .cert-parts li { padding-left: 0.75em; border-left: 0.22em solid var(--pc); }
+  .cert-parts b { display: block; font-weight: 600; color: var(--pc); }
+  .cert-parts span { color: var(--ink-2); }
+  .cert-thanks { max-width: 50em; margin-top: 0.75em !important; font-size: 1.02em; line-height: 1.4; }
+  .cert-sign { display: grid; grid-template-columns: 1fr auto 1fr; gap: 3em; align-items: end; width: 100%; margin-top: auto; padding: 0.5em 2.5em 0; }
+  .cert-v { padding-bottom: 0.2em; border-bottom: 0.06em solid var(--ink); font-size: 1.3em; line-height: 1.3; font-weight: 500; min-height: 1.6em; }
+  .cert-sig { font-style: italic; font-size: 1.55em; min-height: 1.5em; }
+  .cert-k { margin-top: 0.3em !important; font-size: 0.82em; letter-spacing: 0.04em; color: var(--ink-3); }
+  .cert-seal { display: block; width: 7em; height: 7em; margin-bottom: -0.35em; }
+  .cert-ring { font-family: var(--cf); font-size: 12.6px; font-weight: 600; }
   .cert-seal-1 { font-family: var(--mono); font-size: 29px; font-weight: 700; }
-  .cert-seal-w { font-family: var(--display); font-size: 10.4px; font-weight: 700; letter-spacing: 2.2px; }
-  .cert-small { max-width: 62em; margin-top: 0.9em !important; font-size: 0.62em; line-height: 1.45; color: var(--ink-3); }
-  .cert-stamp { display: none; position: absolute; right: -3.4em; top: 2.2em; z-index: 2; width: 14em; padding: 0.25em 0; transform: rotate(35deg); background: #BE2C52; color: #FFFFFF; font-family: var(--display); font-size: 1.2em; font-weight: 900; text-align: center; }
+  .cert-seal-w { font-family: var(--cf); font-size: 11.5px; font-weight: 600; letter-spacing: 2.4px; }
+  .cert-seal-n { font-family: var(--cf); font-size: 46px; font-weight: 500; }
+  .cert-small { max-width: 62em; margin-top: 0.7em !important; font-size: 0.7em; line-height: 1.4; color: var(--ink-3); }
+  /* A sample is marked across the sheet, and it cannot be printed */
+  .cert-stamp { display: none; position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%, -50%) rotate(-22deg); color: rgba(190, 44, 82, 0.1); font-family: var(--display); font-size: 12em; line-height: 1; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; pointer-events: none; }
   .cert-wrap[data-sample] .cert-stamp { display: block; }
-  .cert-wrap[data-sample] [data-cert-name] { color: #AEB9C9; border-bottom-color: #AEB9C9; }
+  .cert-wrap[data-sample] [data-cert-name] { color: #9AA5B6; border-bottom-color: #9AA5B6; }
 
-  /* Second sheet: the course record */
-  .cert-record .cert-in { align-items: stretch; padding: 1.8em 2.4em 1.2em; text-align: left; }
-  .rec-top { display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.9em; border-bottom: 0.07em solid var(--ink); }
-  .rec-kind { font-family: var(--display); font-size: 1.02em; font-weight: 700; letter-spacing: 0.34em; text-transform: uppercase; }
-  .rec-name { margin-top: 0.7em !important; font-family: var(--display); font-size: 2.6em; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; overflow-wrap: anywhere; }
-  .rec-line { margin-top: 0.15em !important; font-size: 0.95em; color: var(--ink-2); }
-  .rec-parts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5em; margin: 1.2em 0 1em; }
-  .rec-parts h3 { display: flex; justify-content: space-between; align-items: baseline; padding: 0.55em 0 0.5em; border-top: 0.26em solid var(--pc); border-bottom: 0.07em solid var(--rule); font-family: var(--display); font-size: 1.12em; line-height: 1.3; font-weight: 900; color: var(--pc); }
-  .rec-parts [data-part="1"] { --pc: #0B7A70; }
-  .rec-parts [data-part="2"] { --pc: #BE2C52; }
-  .rec-parts [data-part="3"] { --pc: #1D6CB0; }
-  .rec-parts ol { list-style: none; font-size: 0.84em; line-height: 1.35; }
-  .rec-lh { font-family: var(--font); font-size: 0.72em; font-weight: 500; color: var(--ink-3); }
-  .rec-parts li { display: grid; grid-template-columns: 1.5em minmax(0, 1fr) 1.6em; column-gap: 0.5em; align-items: baseline; margin: 0; padding: 0.47em 0; border-bottom: 0.09em solid var(--rule); }
-  .rec-n { font-family: var(--mono); color: var(--ink-3); }
-  .rec-t { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .rec-l { font-family: var(--mono); color: var(--ink-2); text-align: right; }
-  .rec-sum { margin-top: 0.7em !important; font-size: 0.84em; font-weight: 700; }
-  .rec-total { margin-top: auto !important; padding-top: 0.9em; border-top: 0.07em solid var(--ink); font-size: 0.9em; font-weight: 500; }
+  /* Second sheet of the course certificate: the course record */
+  .cert-record .cert-in { align-items: stretch; padding: 1em 2em 0.75em; text-align: left; }
+  .rec-top { display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.7em; border-bottom: 0.06em solid var(--ink); }
+  .rec-kind { font-size: 1.25em; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; }
+  .rec-name { margin-top: 0.4em !important; font-size: 2.5em; line-height: 1.15; font-weight: 500; overflow-wrap: anywhere; }
+  .rec-line { margin-top: 0.1em !important; font-size: 1.05em; font-style: italic; color: var(--ink-2); }
+  .rec-parts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5em; margin: 1em 0 0.8em; }
+  .cert-wrap .rec-parts h3 { display: flex; justify-content: space-between; align-items: baseline; padding: 0.4em 0 0.35em; border-top: 0.22em solid var(--pc); border-bottom: 0.06em solid var(--rule); font-family: var(--cf); font-size: 1.25em; line-height: 1.3; font-weight: 600; color: var(--pc); }
+  .rec-parts ol { list-style: none; font-size: 0.98em; line-height: 1.3; }
+  .rec-lh { font-size: 0.68em; font-weight: 400; letter-spacing: 0.04em; color: var(--ink-3); }
+  .rec-parts li { display: grid; grid-template-columns: 1.6em minmax(0, 1fr) 1.6em; column-gap: 0.5em; align-items: baseline; padding: 0.24em 0; border-bottom: 0.07em solid var(--rule); }
+  .rec-n { color: var(--ink-3); }
+  .rec-t { font-weight: 500; }
+  .rec-l { color: var(--ink-2); text-align: right; }
+  .rec-sum { margin-top: 0.55em !important; font-size: 0.95em; font-weight: 600; }
+  .rec-total { margin-top: auto !important; padding-top: 0.7em; border-top: 0.06em solid var(--ink); font-size: 1em; }
   .cert-record .cert-small { max-width: none; }
 
   @media print {
-    @page { size: A4 landscape; margin: 0; }
+
     .cert-page > :not(.cert-wrap), .frame .lhead, .frame .foot { display: none !important; }
+    .cert-page { margin: 0 !important; padding: 0 !important; }
+    .frame { min-height: 0 !important; }
     .cert-wrap { display: block; width: 297mm; margin: 0; }
-    .cert { width: 297mm; height: 209.6mm; aspect-ratio: auto; box-shadow: none; break-inside: avoid; break-after: page; }
-    .cert:last-child { break-after: auto; }
+    .cert { width: 297mm; height: 209.6mm; aspect-ratio: auto; box-shadow: none; break-inside: avoid; }
+    .cert-record { break-before: page; }
     .cert-wrap[data-sample] { display: none; }
   }
 </style>
 
 <script>
-  import { progress, readPref, writePref } from '../scripts/progress.js';
+  import { progress, certs, certDate, readPref, writePref } from '../scripts/progress.js';
 
   const $ = (id) => document.getElementById(id);
   const all = (sel) => Array.from(document.querySelectorAll(sel));
+  const one = (sel) => document.querySelector(sel);
+  const INFO = JSON.parse($('cert-info').textContent);
   const locked = $('cert-locked'), open = $('cert-open'), wrap = $('cert-wrap');
-  const input = $('cert-name'), printBtn = $('cert-print'), sampleBtn = $('cert-sample');
+  const input = $('cert-name'), printBtn = $('cert-print');
   const fmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-  let sample = false;
+  let ready = false;
 
   function showName(name) {
     const clean = name.replace(/\s+/g, ' ').trim().slice(0, 60);
-    all('[data-cert-name]').forEach((n) => { n.textContent = clean || 'Your name'; });
+    all('[data-cert-name]').forEach((n) => { n.textContent = clean || 'Your Name'; });
     // A long name gets smaller letters, so it stays on one line and the sheet never overflows
-    const big = document.querySelector('.cert-name');
-    big.style.fontSize = clean.length > 46 ? '1.9em' : clean.length > 34 ? '2.4em' : clean.length > 24 ? '3.1em' : '';
-    document.querySelector('.rec-name').style.fontSize = clean.length > 46 ? '1.3em' : clean.length > 30 ? '1.7em' : '';
-    printBtn.disabled = !clean;
+    const big = clean.length > 50 ? '1.7em' : clean.length > 40 ? '2.1em' : clean.length > 30 ? '2.7em' : clean.length > 22 ? '3.4em' : '';
+    all('.cert-name').forEach((n) => { n.style.fontSize = big; });
+    one('.rec-name').style.fontSize = clean.length > 46 ? '1.4em' : clean.length > 30 ? '1.8em' : '';
+    printBtn.disabled = !ready || !clean;
     return clean;
   }
-  const showDate = (d) => all('[data-cert-date]').forEach((n) => { n.textContent = fmt.format(d); });
+
+  // Which certificate is shown: the one in the address (#part-2), or else the best one already earned
+  function chosen(list) {
+    const hit = INFO.find((k) => k.hash === window.location.hash.slice(1));
+    if (hit) return hit.id;
+    const earned = list.filter((k) => k.open);
+    if (earned.some((k) => k.id === 'course')) return 'course';
+    return earned.length ? earned[earned.length - 1].id : INFO[0].id;
+  }
 
   function render() {
     const p = progress();
-    const complete = p.total > 0 && p.done >= p.total;
-    all('[data-cert-done]').forEach((n) => { n.textContent = String(p.done); });
-    locked.hidden = complete;
-    open.hidden = !complete;
-    if (complete) {
-      // The date on the certificate is the day the course was first seen as finished in this browser
-      let day = readPref('pid1-cert-date');
-      if (!day || Number.isNaN(Date.parse(day))) { day = new Date().toISOString().slice(0, 10); writePref('pid1-cert-date', day); }
-      showDate(new Date(day + 'T12:00:00'));
-      wrap.removeAttribute('data-sample');
-      wrap.hidden = false;
+    const list = certs(p);
+    const id = chosen(list);
+    const k = list.find((x) => x.id === id), info = INFO.find((x) => x.id === id);
+    ready = k.open;
+    all('.cert-pick .ctile').forEach((a) => {
+      if (a.getAttribute('data-cert') === id) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+    $('cert-h').textContent = info.part ? info.label + ': ' + info.title : info.label;
+    locked.hidden = k.open;
+    open.hidden = !k.open;
+    all('.cert').forEach((s) => { s.hidden = s.getAttribute('data-sheet') !== id; });
+    wrap.toggleAttribute('data-sample', !k.open);
+    if (k.open) {
+      one('[data-cs-congrats]').textContent = info.part
+        ? 'All ' + k.total + ' lessons of Part ' + info.part + ' are done. Well done. Type your full name the way you want it on the certificate.'
+        : 'All ' + k.total + ' lessons are done. That was a lot of work, and you did it. Type your full name the way you want it on the certificate.';
+      one('[data-cs-pages]').textContent = info.part ? 'The result is one page.' : 'The result has two pages: the certificate and your course record.';
+      const day = certDate(id, true);
+      all('[data-cert-date]').forEach((n) => { n.textContent = fmt.format(new Date(day + 'T12:00:00')); });
       if (!input.value) input.value = readPref('pid1-cert-name') || '';
       showName(input.value);
     } else {
-      showDate(new Date());
-      wrap.setAttribute('data-sample', '');
+      one('[data-cs-done]').textContent = String(k.n);
+      one('[data-cs-total]').textContent = String(k.total);
+      one('[data-cs-scope]').textContent = info.part ? 'of Part ' + info.part : 'of the course';
+      all('.cert-left li').forEach((li) => {
+        const st = p.mods[li.getAttribute('data-module')];
+        const inScope = !info.part || li.getAttribute('data-in-part') === String(info.part);
+        li.hidden = !inScope || !st || st.state === 'done';
+      });
+      all('[data-cert-date]').forEach((n) => { n.textContent = fmt.format(new Date()); });
       showName('');
-      wrap.hidden = !sample;
     }
   }
 
@@ -259,12 +345,7 @@ const INK = '#131822';
   });
   input.addEventListener('input', () => showName(input.value));
   printBtn.addEventListener('click', () => window.print());
-  sampleBtn.addEventListener('click', () => {
-    sample = !sample;
-    sampleBtn.setAttribute('aria-pressed', sample ? 'true' : 'false');
-    sampleBtn.textContent = sample ? 'Hide the sample' : 'Show a sample';
-    render();
-  });
+  window.addEventListener('hashchange', render);
   window.addEventListener('pid1:progress', render);
   window.addEventListener('storage', render);
   render();

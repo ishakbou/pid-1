@@ -18,6 +18,8 @@ const data = {
   modules: c.modules.map((x) => ({ n: x.n, part: x.part, lessons: x.lessons.filter((l) => l.exists).map((l) => l.id) })),
   current: isLesson ? info.lesson.id : null,
   module: m ? m.n : null,
+  parts: c.parts.map((x) => ({ n: x.n, title: x.title })),
+  cert: href('certificate'),
 };
 ---
 

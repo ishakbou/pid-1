@@ -83,7 +83,7 @@ Some of these words may mean nothing to you yet. The point is the direction: at 
 
 ### How your progress is saved
 
-At the bottom of every lesson you can mark the lesson as done. Do it when you finish. The Home page then shows how far you are in each module. When every lesson of the course is marked as done, the Certificate page gives you a certificate with your name on it.
+At the bottom of every lesson you can mark the lesson as done. Do it when you finish. The Home page then shows how far you are in each module. When every lesson of a part is marked as done, the Certificates page gives you a certificate for that part, with your name on it. There are three parts, so three part certificates. When the whole course is done, you get a fourth one: the course certificate.
 
 There is no account and no login. The marks are kept in your browser's **local storage**, a small notebook that a browser keeps for each website, on your own device. Nothing is sent anywhere. This has three consequences:
 

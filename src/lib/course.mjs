@@ -126,7 +126,7 @@ export function pendingPaths() {
 export const sitePages = [
   { path: 'roadmap', title: 'Roadmap' },
   { path: 'glossary', title: 'Glossary' },
-  { path: 'certificate', title: 'Certificate' },
+  { path: 'certificate', title: 'Certificates' },
   { path: 'about', title: 'About' },
   { path: 'license', title: 'License' },
 ];

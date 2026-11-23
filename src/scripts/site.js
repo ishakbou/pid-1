@@ -1,6 +1,6 @@
 // Behavior shared by every page: progress numbers, the outline sheet, Copy buttons, printing.
 // The home page and the lesson page load their own script on top of this one.
-import { courseData, progress } from './progress.js';
+import { courseData, progress, certs, certDate } from './progress.js';
 
 const $ = (s, el) => (el || document).querySelector(s);
 const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
@@ -41,6 +41,18 @@ export function renderProgress() {
     li.setAttribute('data-done', done ? 'true' : 'false');
     const t = $('[data-done-text]', li);
     if (t) t.textContent = done ? ' Completed.' : '';
+  });
+  // The four certificates (tiles on Home and on the Certificates page, links at the end of each part)
+  certs(p).forEach((k) => {
+    certDate(k.id, k.open); // remembers the day the certificate was earned
+    $$('[data-cert="' + k.id + '"]').forEach((node) => {
+      node.setAttribute('data-cstate', k.open ? 'open' : 'locked');
+      setBar($('.bar i', node), k.n, k.total);
+      const c = $('[data-cert-count]', node);
+      if (c) c.textContent = k.n + ' of ' + plural(k.total, 'lesson');
+      const s = $('[data-cert-state]', node);
+      if (s) s.textContent = k.open ? 'Ready' : 'Locked';
+    });
   });
   $$('[data-overall-pct]').forEach((n) => { n.textContent = p.pct + '%'; });
   $$('[data-overall-bar]').forEach((n) => { setBar(n, p.done, p.total); });
